@@ -1,3 +1,4 @@
+
 import { ModeToggle } from "@/theme/mode-toggle";
 
 
@@ -6,6 +7,7 @@ export default function Home() {
     <div>
       hello
       <ModeToggle />
+     
     </div>
   );
 }

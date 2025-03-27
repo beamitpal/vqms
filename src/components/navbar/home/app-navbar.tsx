@@ -1,55 +1,67 @@
+// src/components/navbar/business/navbar.tsx
+"use client"; // Add this since we're using a client-side hook
 
+import { usePathname } from "next/navigation"; // Import usePathname
+import Logo from "@/components/brand/logo";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
-import { Package2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function HomeNavbar() {
+  const pathname = usePathname(); // Get the current pathname
+
+  // Array of navigation links
+  const navLinks = [
+    { href: "/dashboard", label: "Dashboard", muted: true },
+    { href: "/orders", label: "Orders", muted: true },
+    { href: "/products", label: "Products", muted: true },
+    { href: "/customers", label: "Customers", muted: true },
+    { href: "/settings", label: "Settings", muted: false },
+  ];
+
   return (
-    <header className="sticky top-0 flex w-full h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <Link
-          href="#"
-          className="flex items-center gap-2 text-lg font-semibold md:text-base"
-        >
-          <Package2 className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
+    <header className="sticky top-0 flex w-full items-center gap-4 border-b bg-background px-4 md:px-6">
+      {/* Logo and Sidebar Trigger */}
+      <div className="flex items-center gap-4">
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold md:text-base">
+          <Logo className="size-8" />
+          <span className="sr-only">VQMS</span>
         </Link>
-        <Link
-          href="#"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Dashboard
-        </Link>
-        <Link
-          href="#"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Orders
-        </Link>
-        <Link
-          href="#"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Products
-        </Link>
-        <Link
-          href="#"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Customers
-        </Link>
-        <Link
-          href="#"
-          className="text-foreground transition-colors hover:text-foreground"
-        >
-          Settings
-        </Link>
-      </nav>
-      <div className="md:hidden">
-        <SidebarTrigger size="icon" variant="outline" className="m-1" />
+        <div className="md:hidden">
+          <SidebarTrigger size="icon" variant="outline" className="m-1" />
+        </div>
       </div>
-      <Separator orientation="vertical" className="mr-2 h-4" />
+
+      {/* Navigation Links */}
+      <nav className="hidden md:flex flex-col md:flex-row items-center gap-5 text-sm lg:gap-6 flex-1">
+        {navLinks.map((link) => {
+          const isActive = pathname === link.href; // Check if the current path matches the link
+          return (
+            <Link
+              key={link.label}
+              href={link.href}
+              className={`transition-colors hover:text-foreground ${
+                isActive ? "text-foreground" : link.muted ? "text-muted-foreground" : "text-foreground"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Login and Signup Buttons */}
+      <div className="flex items-center gap-2 ml-auto">
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/business/login">Login</Link>
+        </Button>
+        <Button size="sm" asChild>
+          <Link href="/business/signup">Sign Up</Link>
+        </Button>
+      </div>
+
+      <Separator orientation="vertical" className="hidden md:block h-12 mx-4" />
     </header>
   );
 }
