@@ -1,16 +1,13 @@
-// src/components/projects/users-table/data-table-toolbar.tsx
+
 "use client";
 
-import { Table as TanstackTable } from "@tanstack/react-table";
+
 import { Input } from "@/components/ui/input";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { User } from "@prisma/client";
+import { DataTableToolbarProps } from "@/lib/types";
 
-interface DataTableToolbarProps<TData = User> {
-  table: TanstackTable<TData>;
-  filterKey?: string;
-  filterOptions?: { label: string; value: string; icon?: React.ComponentType<{ className?: string }> }[];
-}
+
 
 export function DataTableToolbar<TData = User>({
   table,

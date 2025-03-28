@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { supabase } from "@/lib/supabase"; // Adjust based on your Supabase setup
+
+import { supabase } from "@/lib/supabase"; 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,38 +28,9 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft } from "lucide-react";
+import { AccountDetailsFormSchema, AccountDetailsFormValues, AvatarFormSchema, AvatarFormValues, NewDetailsFormSchema, NewDetailsFormValues, PasswordFormSchema, PasswordFormValues } from "@/lib/types";
 
-// Zod schemas for each form
-const AccountDetailsFormSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  fullName: z.string().min(2, "Full name must be at least 2 characters").max(100, "Full name must be less than 100 characters"),
-});
 
-const NewDetailsFormSchema = z.object({
-  phone: z.string().min(10, "Phone number must be at least 10 digits").max(15, "Phone number must be less than 15 digits").optional().or(z.literal("")),
-  bio: z.string().max(500, "Bio must be less than 500 characters").optional().or(z.literal("")),
-});
-
-const AvatarFormSchema = z.object({
-  avatar: z.instanceof(File).refine((file) => file.size <= 5 * 1024 * 1024, "File size must be less than 5MB").refine(
-    (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
-    "Only JPEG, PNG, or GIF files are allowed"
-  ).optional(),
-});
-
-const PasswordFormSchema = z.object({
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirm: z.string().min(8, "Password must be at least 8 characters"),
-}).refine((data) => data.password === data.confirm, {
-  message: "Passwords must match",
-  path: ["confirm"],
-});
-
-// Type inferences
-type AccountDetailsFormValues = z.infer<typeof AccountDetailsFormSchema>;
-type NewDetailsFormValues = z.infer<typeof NewDetailsFormSchema>;
-type AvatarFormValues = z.infer<typeof AvatarFormSchema>;
-type PasswordFormValues = z.infer<typeof PasswordFormSchema>;
 
 export default function AccountPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +38,7 @@ export default function AccountPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const router = useRouter();
 
-  // Forms
+
   const accountForm = useForm<AccountDetailsFormValues>({
     resolver: zodResolver(AccountDetailsFormSchema),
     defaultValues: { email: "", fullName: "" },
@@ -88,7 +59,6 @@ export default function AccountPage() {
     defaultValues: { password: "", confirm: "" },
   });
 
-  // Fetch current user details on mount
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -105,7 +75,7 @@ export default function AccountPage() {
     fetchUser();
   }, [accountForm, newDetailsForm, router]);
 
-  // Handle account details submission
+
   async function onAccountSubmit(values: AccountDetailsFormValues) {
     setIsLoading(true);
     try {
@@ -116,14 +86,14 @@ export default function AccountPage() {
       if (error) throw error;
       toast.success("✅ Account details updated successfully!");
     } catch (error) {
-      console.error("Update account error:", error);
+      toast.error("Update account error");
       handleError(error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  // Handle new details submission
+
   async function onNewDetailsSubmit(values: NewDetailsFormValues) {
     setIsLoading(true);
     try {
@@ -133,14 +103,13 @@ export default function AccountPage() {
       if (error) throw error;
       toast.success("✅ Additional details updated successfully!");
     } catch (error) {
-      console.error("Update new details error:", error);
+      toast.error("Update new details error");
       handleError(error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  // Handle avatar submission
   async function onAvatarSubmit(values: AvatarFormValues) {
     if (!values.avatar) return;
     setIsLoading(true);
@@ -154,16 +123,16 @@ export default function AccountPage() {
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      // Upload to Supabase Storage
+
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      // Get public URL
+
       const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-      // Update user metadata with avatar URL
+
       const { error: updateError } = await supabase.auth.updateUser({
         data: { avatar_url: publicUrl },
       });
@@ -173,14 +142,14 @@ export default function AccountPage() {
       toast.success("✅ Avatar updated successfully!");
       avatarForm.reset();
     } catch (error) {
-      console.error("Update avatar error:", error);
+      toast.error("Update avatar error");
       handleError(error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  // Handle password submission
+
   async function onPasswordSubmit(values: PasswordFormValues) {
     setIsLoading(true);
     try {
@@ -191,14 +160,14 @@ export default function AccountPage() {
       toast.success("✅ Password updated successfully!");
       passwordForm.reset();
     } catch (error) {
-      console.error("Update password error:", error);
+      toast.error("Update password error");
       handleError(error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  // Error handling helper
+
   function handleError(error: unknown) {
     if (error instanceof Error) {
       if (error.message.includes("Email rate limit exceeded")) {
@@ -229,9 +198,9 @@ export default function AccountPage() {
         </Button>
         <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-          {/* Main Content (2 columns on large screens) */}
+        
           <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-            {/* Account Details Card */}
+         
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">Account Details</CardTitle>
@@ -277,7 +246,7 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
-            {/* New Details Card */}
+        
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">Additional Details</CardTitle>
@@ -324,9 +293,9 @@ export default function AccountPage() {
             </Card>
           </div>
 
-          {/* Sidebar (1 column) */}
+        
           <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-            {/* Avatar Update Card */}
+           
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">Update Avatar</CardTitle>
@@ -375,7 +344,7 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
-            {/* Password Update Card */}
+           
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">Update Password</CardTitle>

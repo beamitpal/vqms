@@ -67,18 +67,17 @@ import {
   ProjectTypes,
   customFieldTemplateSchema,
   projectStatusUpdateFormSchema,
+  CustomFieldTemplate,
 } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { toast } from "sonner";
 
-type CustomFieldTemplate = Record<
-  string,
-  { type: "text" | "textarea"; defaultValue: string }
->;
 
 function Page() {
-  const params = useParams();
   const router = useRouter();
+  const params = useParams();
+
   const slug = params?.slug as string;
   const [project, setProject] = useState<ProjectTypes | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +108,7 @@ function Page() {
     try {
       const businessId = await getBusiness();
       await deleteProjectById(project.id, businessId.id);
-      router.push("/business/projects"); // Redirect after successful deletion
+      router.push("/business/projects"); 
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "An error occurred while deleting"
@@ -252,9 +251,8 @@ function ProjectNameAndDescriptionEditCard({
         values
       );
       setProject(updatedProject);
-      console.log("Project name and description updated:", values);
-    } catch (error) {
-      console.error("Failed to update project:", error);
+    } catch {
+      toast.error("Failed to update project");
     }
   }
 
@@ -340,9 +338,8 @@ function ProjectStatusEditCard({
         values.status
       );
       setProject(updatedProject);
-      console.log("Project status updated:", values.status);
-    } catch (error) {
-      console.error("Failed to update status:", error);
+    } catch {
+      toast.error("Failed to update status");
     }
   }
 
@@ -402,8 +399,8 @@ function ProjectCustomFieldsEditCard({
   setProject: React.Dispatch<React.SetStateAction<ProjectTypes | null>>;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isAdding, setIsAdding] = useState(false); // Loading state for adding
-  const [isDeleting, setIsDeleting] = useState<string | null>(null); // Loading state for deleting, tracks fieldName
+  const [isAdding, setIsAdding] = useState(false); 
+  const [isDeleting, setIsDeleting] = useState<string | null>(null); 
   const [customFieldsTemplate, setCustomFieldsTemplate] =
     useState<CustomFieldTemplate>(
       (project.customFields as CustomFieldTemplate) || {}
@@ -418,7 +415,7 @@ function ProjectCustomFieldsEditCard({
   });
 
   async function onSubmit(values: z.infer<typeof customFieldTemplateSchema>) {
-    setIsAdding(true); // Start loading
+    setIsAdding(true); 
     const updatedTemplate: CustomFieldTemplate = {
       ...customFieldsTemplate,
       [values.fieldName]: {
@@ -435,18 +432,17 @@ function ProjectCustomFieldsEditCard({
       );
       setCustomFieldsTemplate(updatedTemplate);
       setProject(updatedProject);
-      console.log("Custom fields updated:", updatedTemplate);
-    } catch (error) {
-      console.error("Failed to update custom fields:", error);
+    } catch {
+      toast.error("Failed to update custom fields");
     } finally {
-      setIsAdding(false); // Stop loading
+      setIsAdding(false); 
       setIsDialogOpen(false);
       form.reset();
     }
   }
 
   async function handleDelete(fieldName: string) {
-    setIsDeleting(fieldName); // Start loading for this specific field
+    setIsDeleting(fieldName);
     const updatedTemplate = { ...customFieldsTemplate };
     delete updatedTemplate[fieldName];
     try {
@@ -458,11 +454,10 @@ function ProjectCustomFieldsEditCard({
       );
       setCustomFieldsTemplate(updatedTemplate);
       setProject(updatedProject);
-      console.log("Custom field deleted:", fieldName);
-    } catch (error) {
-      console.error("Failed to delete custom field:", error);
+    } catch {
+      toast.error("Failed to delete custom field");
     } finally {
-      setIsDeleting(null); // Stop loading
+      setIsDeleting(null); 
     }
   }
 
@@ -488,7 +483,7 @@ function ProjectCustomFieldsEditCard({
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(fieldName)}
-                      disabled={isDeleting === fieldName} // Disable while deleting this field
+                      disabled={isDeleting === fieldName}
                     >
                       {isDeleting === fieldName ? (
                         <RefreshCw className="animate-spin mr-2" />
@@ -586,7 +581,7 @@ function ProjectCustomFieldsEditCard({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isAdding} // Disable while adding
+                  disabled={isAdding} 
                 >
                   {isAdding ? (
                     <RefreshCw className="animate-spin mr-2" />
@@ -620,9 +615,8 @@ function ProjectApiKey({
         businessId.id
       );
       setProject(updatedProject);
-      console.log("API key regenerated:", updatedProject.apiKey);
-    } catch (error) {
-      console.error("Failed to regenerate API key:", error);
+    } catch {
+      toast.error("Failed to regenerate API key");
     } finally {
       setIsRegenerating(false);
     }
@@ -644,7 +638,7 @@ function ProjectApiKey({
               onClick={handleRegenerateApiKey}
               disabled={isRegenerating}
             >
-              <RefreshCw className={isRegenerating ? "animate-spin" : ""} />{" "}
+              <RefreshCw className={isRegenerating ? "animate-spin" : ""} />
               Change
             </Button>
           </div>

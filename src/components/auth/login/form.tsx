@@ -1,4 +1,4 @@
-// components/auth/login/form.tsx
+
 "use client";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,8 +24,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { LoginFormProps, loginformSchema } from "@/lib/types";
 import { useState } from "react";
+import { toast } from "sonner";
 
-function LoginForm({ onSubmit, footer, header, forgot, isLoading }: LoginFormProps) {
+function LoginForm({
+  onSubmit,
+  footer,
+  header,
+  forgot,
+  isLoading,
+}: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof loginformSchema>>({
     resolver: zodResolver(loginformSchema),
@@ -39,14 +46,14 @@ function LoginForm({ onSubmit, footer, header, forgot, isLoading }: LoginFormPro
     setIsSubmitting(true);
     try {
       await onSubmit(values);
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch {
+      toast.error("Login failed:");
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  // Use isLoading from props if provided, otherwise use local isSubmitting state
+
   const submitDisabled = isLoading !== undefined ? isLoading : isSubmitting;
 
   return (
@@ -59,7 +66,10 @@ function LoginForm({ onSubmit, footer, header, forgot, isLoading }: LoginFormPro
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-8"
+          >
             <div className="grid gap-6">
               {header && header}
               <FormField
@@ -69,9 +79,9 @@ function LoginForm({ onSubmit, footer, header, forgot, isLoading }: LoginFormPro
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="abc@example.com" 
-                        {...field} 
+                      <Input
+                        placeholder="abc@example.com"
+                        {...field}
                         disabled={submitDisabled}
                       />
                     </FormControl>
@@ -100,9 +110,9 @@ function LoginForm({ onSubmit, footer, header, forgot, isLoading }: LoginFormPro
                 )}
               />
               {forgot && forgot}
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={submitDisabled}
               >
                 {submitDisabled ? "Logging in..." : "Login"}

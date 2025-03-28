@@ -13,30 +13,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { LineChartCardProps } from "@/lib/types"
 
-interface DataPoint {
-  [key: string]: string | number | boolean | null | undefined
-}
 
-interface Metric {
-  label: string
-  value: number | string
-  unit: string
-}
-
-interface LineChartCardProps {
-  metrics: Metric[]
-  data: DataPoint[]
-  dataKey: string
-  xAxisKey: string
-  configLabel: string
-  cardClassName?: string
-  chartColor?: string
-  valueFormatter?: (value: number | string) => string
-  xAxisFormatter?: (value: string | number | Date) => string
-  tooltipLabelFormatter?: (value: string | number | Date) => string
-  showGrid?: boolean
-}
 
 export default function StatsCard4({
   metrics,
@@ -45,7 +24,7 @@ export default function StatsCard4({
   xAxisKey,
   configLabel,
   cardClassName = "flex flex-col lg:max-w-md",
-  chartColor = "hsl(var(--chart-1))",
+  chartColor = "var(--chart-1)",
   valueFormatter = (value) => String(value),
   xAxisFormatter = (value) => new Date(value).toLocaleDateString("en-US", { weekday: "short" }),
   tooltipLabelFormatter = (value) => new Date(value).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" }),
@@ -85,7 +64,7 @@ export default function StatsCard4({
               <CartesianGrid
                 strokeDasharray="4 4"
                 vertical={false}
-                stroke="hsl(var(--muted-foreground))"
+                stroke="var(--muted-foreground)"
                 strokeOpacity={0.5}
               />
             )}
@@ -100,11 +79,11 @@ export default function StatsCard4({
             <Line
               dataKey={dataKey}
               type="natural"
-              fill={`var(--color-${dataKey})`}
-              stroke={`var(--color-${dataKey})`}
+              fill={`var(--chart-1)`}
+              stroke={`var(--chart-2)`}
               strokeWidth={2}
               dot={false}
-              activeDot={{ fill: `var(--color-${dataKey})`, stroke: `var(--color-${dataKey})`, r: 4 }}
+              activeDot={{ fill: `var(--chart-4))`, stroke: `var(--chart-5)`, r: 4 }}
             />
             <ChartTooltip
               content={

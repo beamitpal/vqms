@@ -1,7 +1,8 @@
-// api/auth/logout/route.ts
+
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { toast } from "sonner";
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -18,7 +19,7 @@ export async function POST() {
     response.cookies.delete("sb-refresh-token");
     return response;
   } catch (error) {
-    console.error("Logout error:", error);
+    toast.error("Logout  error:");
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Logout failed" },
       { status: 500 }

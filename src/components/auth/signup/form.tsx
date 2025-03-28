@@ -45,7 +45,6 @@ function SignUpForm() {
   async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
     setIsLoading(true);
     try {
-    
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,10 +61,12 @@ function SignUpForm() {
       toast.success("⚠️ Verify Your Email! Please check your inbox...");
       router.push("/business/login"); // Redirect to login instead of /business
     } catch (error) {
-      console.error("Signup error:", error);
+      toast.error("Signup error");
       if (error instanceof Error) {
         if (error.message.includes("User already registered")) {
-          toast.error("This email is already registered. Please log in instead.");
+          toast.error(
+            "This email is already registered. Please log in instead."
+          );
         } else {
           toast.error(error.message || "Signup failed! Please try again.");
         }
@@ -93,9 +94,9 @@ function SignUpForm() {
                 <FormItem>
                   <FormLabel>Company</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="ABC PVT. LTD." 
-                      {...field} 
+                    <Input
+                      placeholder="ABC PVT. LTD."
+                      {...field}
                       disabled={isLoading}
                     />
                   </FormControl>
@@ -111,9 +112,9 @@ function SignUpForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="abc@example.com" 
-                      {...field} 
+                    <Input
+                      placeholder="abc@example.com"
+                      {...field}
                       disabled={isLoading}
                     />
                   </FormControl>
@@ -129,10 +130,10 @@ function SignUpForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="abc@1234" 
-                      {...field} 
+                    <Input
+                      type="password"
+                      placeholder="abc@1234"
+                      {...field}
                       disabled={isLoading}
                     />
                   </FormControl>
@@ -148,10 +149,10 @@ function SignUpForm() {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="abc@1234" 
-                      {...field} 
+                    <Input
+                      type="password"
+                      placeholder="abc@1234"
+                      {...field}
                       disabled={isLoading}
                     />
                   </FormControl>
@@ -160,11 +161,7 @@ function SignUpForm() {
                 </FormItem>
               )}
             />
-            <Button 
-              className="w-full" 
-              type="submit" 
-              disabled={isLoading}
-            >
+            <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? "Signing Up..." : "Submit"}
             </Button>
           </form>

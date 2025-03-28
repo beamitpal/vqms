@@ -1,16 +1,13 @@
-// src/components/projects/users-table/data-table-body.tsx
 "use client";
 
-import { Table as TanstackTable } from "@tanstack/react-table";
 import { TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { flexRender } from "@tanstack/react-table";
 import { User } from "@prisma/client";
+import { DataTableBodyProps } from "@/lib/types";
 
-interface DataTableBodyProps<TData = User> {
-  table: TanstackTable<TData>;
-}
-
-export function DataTableBody<TData = User>({ table }: DataTableBodyProps<TData>) {
+export function DataTableBody<TData = User>({
+  table,
+}: DataTableBodyProps<TData>) {
   return (
     <TableBody>
       {table.getRowModel().rows.length ? (
@@ -19,20 +16,20 @@ export function DataTableBody<TData = User>({ table }: DataTableBodyProps<TData>
             {row.getVisibleCells().map((cell) => (
               <TableCell
                 key={cell.id}
-                className="text-xs"
-                style={{ width: cell.column.getSize() }}
+                className="text-xs truncate px-2 py-1 sm:px-4 sm:py-2"
+                style={{ maxWidth: `${cell.column.getSize()}px` }}
               >
-                {flexRender(
-                  cell.column.columnDef.cell,
-                  cell.getContext()
-                )}
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}
           </TableRow>
         ))
       ) : (
         <TableRow>
-          <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center text-xs">
+          <TableCell
+            colSpan={table.getAllColumns().length}
+            className="h-24 text-center text-xs"
+          >
             No results.
           </TableCell>
         </TableRow>

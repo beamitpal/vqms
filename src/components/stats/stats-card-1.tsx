@@ -21,47 +21,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ReactNode } from "react";
+import { ChartCardProps } from "@/lib/types";
 
-interface DataPoint {
-  [key: string]: string | number | boolean | null | undefined;
-}
 
-interface ChartCardProps {
-  // Header props
-  title: string | number;
-  unit?: string;
-  description?: string;
-  titleClassName?: string;
 
-  // Chart props
-  data: DataPoint[];
-  dataKey: string;
-  xAxisKey: string;
-  configLabel: string;
-  chartColor?: string;
-  averageValue?: number;
-  averageLabel?: string;
-
-  // Formatting props
-  valueFormatter?: (value: number) => string;
-  xAxisFormatter?: (value: string | number | Date) => string;
-  tooltipLabelFormatter?: (value: string | number | Date) => string;
-
-  // Footer props
-  footerContent?: ReactNode;
-  showFooter?: boolean;
-
-  // Styling props
-  cardClassName?: string;
-  barRadius?: number;
-  showTooltip?: boolean;
-  showReferenceLine?: boolean;
-
-  // Optional calculations
-  calculateTotal?: (data: DataPoint[]) => number;
-  calculateTarget?: (data: DataPoint[], current: number | string) => number;
-}
 
 export default function StatsCard1({
   title,
@@ -72,7 +35,7 @@ export default function StatsCard1({
   dataKey,
   xAxisKey,
   configLabel,
-  chartColor = "hsl(var(--chart-1))",
+  chartColor = "var(--chart-1)",
   averageValue,
   averageLabel,
   valueFormatter = (value) => value.toLocaleString(),
@@ -125,7 +88,7 @@ export default function StatsCard1({
           >
             <Bar
               dataKey={dataKey}
-              fill={`var(--color-${dataKey})`}
+              fill="var(--chart-1)"
               radius={barRadius}
               fillOpacity={0.6}
               activeBar={<Rectangle fillOpacity={0.8} />}
@@ -152,7 +115,7 @@ export default function StatsCard1({
             {showReferenceLine && averageValue && (
               <ReferenceLine
                 y={averageValue}
-                stroke="hsl(var(--muted-foreground))"
+                stroke="var(--muted-foreground)"
                 strokeDasharray="3 3"
                 strokeWidth={1}
               >
@@ -161,14 +124,14 @@ export default function StatsCard1({
                     position="insideBottomLeft"
                     value={averageLabel}
                     offset={10}
-                    fill="hsl(var(--foreground))"
+                    fill="var(--foreground)"
                   />
                 )}
                 <Label
                   position="insideTopLeft"
                   value={valueFormatter(averageValue)}
                   className="text-lg"
-                  fill="hsl(var(--foreground))"
+                  fill="var(--foreground)"
                   offset={10}
                   startOffset={100}
                 />

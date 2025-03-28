@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function BusinessNavBar() {
   const [user, setUser] = useState<{
@@ -65,8 +66,8 @@ export default function BusinessNavBar() {
               "https://github.com/beamitpal.png",
           });
         }
-      } catch (error) {
-        console.error("User fetch error:", error);
+      } catch  {
+        toast.error("User fetch error");
         router.push("/business/login");
       }
     };
@@ -101,14 +102,14 @@ export default function BusinessNavBar() {
       });
       router.push("/business/login");
       router.refresh();
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch  {
+      toast.error("Logout error");
     }
   };
 
   return (
     <header className="flex h-14 items-center border-b px-4 lg:px-6">
-      {/* Left Section: Sidebar Trigger, Logo & Brand Name */}
+    
       <div className="flex items-center gap-3">
         <SidebarTrigger size="icon" variant="outline" />
         <Logo className="h-8 w-8" />
@@ -117,7 +118,7 @@ export default function BusinessNavBar() {
         <ReusableBreadCrumb path={pathname} />
       </div>
 
-      {/* Right Section: Avatar Dropdown */}
+   
       <div className="ml-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

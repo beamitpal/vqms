@@ -4,15 +4,13 @@ import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle, resendVerificationEmail } from "@/lib/auth";
+import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-interface LoginFormValues {
-  email: string;
-  password: string;
-}
+
 
 function BusinessLoginPage() {
   const router = useRouter();
@@ -42,7 +40,7 @@ function BusinessLoginPage() {
       router.push("/business");
       router.refresh();
     } catch (error) {
-      console.error("Login error:", error);
+      toast.error("Login error");
       if (error instanceof Error) {
         if (error.message.includes("Email not confirmed")) {
           setUnverifiedEmail(values.email);

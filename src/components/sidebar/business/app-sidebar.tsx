@@ -8,7 +8,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { BookOpen, FolderOpenDot, LayoutDashboard, Settings2 } from "lucide-react";
+import {
+  BookOpen,
+  FolderOpenDot,
+  LayoutDashboard,
+  Settings2,
+  Users,
+} from "lucide-react";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,22 +36,29 @@ export function BusinessAppSidebar({
         icon: FolderOpenDot,
       },
       {
+        title: "Queue Manage",
+        url: "/business/queue-manage",
+        icon: Users,
+      },
+
+      {
         title: "API Documentation",
         url: "/business/api-docs",
         icon: BookOpen,
-      },{
+      },
+      {
         title: "Settings",
         url: "/business/settings",
         icon: Settings2,
-      }
+      },
     ],
   };
 
   const isRouteActive = (pathname: string | null, url: string) => {
     if (!pathname || !url) return false;
-    // Dashboard is active only on exact match
+
     if (url === "/business") return pathname === url;
-    // Other items (e.g., Projects) are active for their subroutes, excluding /business
+   
     return pathname.startsWith(url);
   };
   return (

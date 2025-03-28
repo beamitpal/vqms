@@ -1,4 +1,4 @@
-// lib/supabase-server.ts
+
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions as SupabaseCookieOptions } from "@supabase/ssr";
 
@@ -33,8 +33,8 @@ export function createSupabaseServerClient({
       remove: (name, options) => deleteCookie(name, { ...COOKIE_OPTIONS, ...options }),
     },
     auth: {
-      persistSession: true, // Ensure session persists
-      autoRefreshToken: true, // Automatically refresh tokens
+      persistSession: true, 
+      autoRefreshToken: true,
       detectSessionInUrl: true,
     },
   });

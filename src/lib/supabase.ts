@@ -1,4 +1,4 @@
-// lib/supabase.ts
+
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
@@ -10,7 +10,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("Supabase environment variables are missing");
 }
 
-// Only create the client if running in the browser
+
 export const supabase = typeof window !== "undefined"
   ? createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       cookies: {
@@ -30,4 +30,4 @@ export const supabase = typeof window !== "undefined"
         },
       },
     })
-  : null as ReturnType<typeof createBrowserClient>; // Fallback for server-side (shouldn't be used)
+  : null as ReturnType<typeof createBrowserClient>;

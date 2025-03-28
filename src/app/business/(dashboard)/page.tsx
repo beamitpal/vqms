@@ -1,4 +1,4 @@
-// dashboard/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -17,35 +17,11 @@ import {
   getProjectActivity,
 } from "@/actions/business/stats/index";
 import { getBusiness } from "@/lib/auth";
+import { toast } from "sonner";
+import { ProjectStats, TimeSeriesData, UserStats } from "@/lib/types";
+import { Business } from "@prisma/client";
 
-interface ProjectStats {
-  totalProjects: number;
-  publicProjects: number;
-  privateProjects: number;
-  unlistedProjects: number;
-  avgUsersPerProject: number;
-}
 
-interface UserStats {
-  totalUsers: number;
-  activeUsers: number;
-  usersByProject: {
-    projectId: string;
-    projectName: string;
-    userCount: number;
-  }[];
-}
-
-interface TimeSeriesData {
-  date: string;
-  value: number;
-  [key: string]: string | number; // Match StatsCard6 and StatsCard8's DataPoint
-}
-
-interface Business {
-  id: string;
-  email: string;
-}
 export default function DashboardPage() {
   const [projectStats, setProjectStats] = useState<ProjectStats | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
@@ -75,8 +51,8 @@ export default function DashboardPage() {
         setUserStats(usrStats);
         setUserGrowth(usrGrowth);
         setProjectActivity(projActivity);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+      } catch {
+        toast.error("Error fetching dashboard data");
       }
     }
 
@@ -113,7 +89,7 @@ export default function DashboardPage() {
 
   return (
     <div className="chart-wrapper mx-auto flex max-w-6xl flex-col flex-wrap items-start justify-center gap-6 p-6 sm:flex-row sm:p-8">
-      {/* First column */}
+  
       <div className="grid w-full gap-6 sm:grid-cols-2 lg:max-w-[22rem] lg:grid-cols-1 xl:max-w-[25rem]">
         <StatsCard1
           title={projectStats.totalProjects}
@@ -132,7 +108,11 @@ export default function DashboardPage() {
 
         <StatsCard4
           metrics={[
-            { label: "Total Users", value: userStats.totalUsers, unit: "users" },
+            {
+              label: "Total Users",
+              value: userStats.totalUsers,
+              unit: "users",
+            },
             { label: "Active", value: userStats.activeUsers, unit: "users" },
           ]}
           data={userGrowth}
@@ -145,7 +125,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Second column */}
+   
       <div className="grid w-full flex-1 gap-6 lg:max-w-[20rem]">
         <StatsCard2
           title="Project Status"
@@ -193,7 +173,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Third column */}
+    
       <div className="grid w-full flex-1 gap-6">
         <StatsCard3
           metrics={[

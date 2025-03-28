@@ -1,6 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { toast } from "sonner";
 
 export async function GET(request: Request, { params }: { params: { projectId: string } }) {
   const { projectId } = params;
@@ -16,13 +17,13 @@ export async function GET(request: Request, { params }: { params: { projectId: s
   try {
     const project = byUsername
       ? await prisma.project.findFirst({
-          where: { username: projectId, businessId },
-          include: { users: true },
-        })
+        where: { username: projectId, businessId },
+        include: { users: true },
+      })
       : await prisma.project.findUnique({
-          where: { id: projectId, businessId },
-          include: { users: true },
-        });
+        where: { id: projectId, businessId },
+        include: { users: true },
+      });
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -33,8 +34,8 @@ export async function GET(request: Request, { params }: { params: { projectId: s
     }
 
     return NextResponse.json({ success: true, project });
-  } catch (error) {
-    console.error("Get project error:", error);
+  } catch {
+    toast.error("Get project error");
     return NextResponse.json({ error: "Failed to fetch project" }, { status: 500 });
   }
 }
@@ -68,8 +69,8 @@ export async function DELETE(request: Request, { params }: { params: { projectId
     });
 
     return NextResponse.json({ success: true, project: deletedProject });
-  } catch (error) {
-    console.error("Delete project error:", error);
+  } catch {
+    toast.error("Delete project error");
     return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
   }
 }

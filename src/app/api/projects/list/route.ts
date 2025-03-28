@@ -1,6 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { toast } from "sonner";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -26,8 +27,8 @@ export async function GET(request: Request) {
       },
     });
     return NextResponse.json({ success: true, projects });
-  } catch (error) {
-    console.error("List projects error:", error);
+  } catch  {
+    toast.error("List projects error:");
     return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
   }
 }

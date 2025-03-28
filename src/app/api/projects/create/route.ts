@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { Prisma } from "@prisma/client";
+import { toast } from "sonner";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     await prisma.business.upsert({
       where: { id: businessId },
       update: { email: businessEmail },
-      create: { id: businessId, email: businessEmail }, // Fixed typo: 'watchingId' -> 'businessId'
+      create: { id: businessId, email: businessEmail }, 
     });
 
     const project = await prisma.project.create({
@@ -29,8 +30,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, project }, { status: 201 });
-  } catch (error) {
-    console.error("Create project error:", error);
+  } catch {
+    toast.error("Create project error:");
     return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
   }
 }

@@ -21,8 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { v4 as uuidv4 } from "uuid";
-import { createProjectSchema } from "@/lib/types";
-import { ProjectStatus } from "@prisma/client";
+import { createProjectSchema, ProjectListItem } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, RefreshCw } from "lucide-react"; // Added RefreshCw for loading
 import { useEffect, useState } from "react";
@@ -32,19 +31,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { createProject, listAllProjects } from "@/actions/business/projects";
 import { getBusiness } from "@/lib/auth";
 
-interface ProjectListItem {
-  name: string;
-  description: string;
-  username: string;
-  status: ProjectStatus;
-}
+
 
 export default function Page() {
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
-  const [loading, setLoading] = useState(true); // For fetching projects
-  const [isCreating, setIsCreating] = useState(false); // For creating a project
-  const [error, setError] = useState<string | null>(null); // General fetch error
-  const [formError, setFormError] = useState<string | null>(null); // Form submission error
+  const [loading, setLoading] = useState(true); 
+  const [isCreating, setIsCreating] = useState(false); 
+  const [error, setError] = useState<string | null>(null); 
+  const [formError, setFormError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<z.infer<typeof createProjectSchema>>({
@@ -76,8 +70,8 @@ export default function Page() {
   }
 
   async function onSubmit(values: z.infer<typeof createProjectSchema>) {
-    setIsCreating(true); // Start loading
-    setFormError(null); // Clear previous errors
+    setIsCreating(true);
+    setFormError(null); 
 
     try {
       const businessId = await getBusiness();
@@ -102,18 +96,18 @@ export default function Page() {
         createProjectArr.businessEmail,
         createProjectArr.data
       );
-      await fetchProjects(); // Refresh project list
-      form.reset(); // Reset form fields
-      setIsDialogOpen(false); // Close dialog on success
+      await fetchProjects(); 
+      form.reset();
+      setIsDialogOpen(false); 
     } catch (err) {
-      // Handle specific errors
+     
       if (err instanceof Error && err.message.includes("Unique constraint failed on the fields: (`username`)")) {
         setFormError("This username is already taken. Please choose a different one.");
       } else {
         setFormError(err instanceof Error ? err.message : "Failed to create project");
       }
     } finally {
-      setIsCreating(false); // Stop loading
+      setIsCreating(false); 
     }
   }
 

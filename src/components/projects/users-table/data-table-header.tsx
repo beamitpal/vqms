@@ -1,16 +1,13 @@
-// src/components/projects/users-table/data-table-header.tsx
 "use client";
 
-import { Table as TanstackTable } from "@tanstack/react-table";
 import { TableHead, TableRow, TableHeader } from "@/components/ui/table";
 import { flexRender } from "@tanstack/react-table";
 import { User } from "@prisma/client";
+import { DataTableHeaderProps } from "@/lib/types";
 
-interface DataTableHeaderProps<TData = User> {
-  table: TanstackTable<TData>;
-}
-
-export function DataTableHeader<TData = User>({ table }: DataTableHeaderProps<TData>) {
+export function DataTableHeader<TData = User>({
+  table,
+}: DataTableHeaderProps<TData>) {
   return (
     <TableHeader>
       {table.getHeaderGroups().map((headerGroup) => (
@@ -18,15 +15,12 @@ export function DataTableHeader<TData = User>({ table }: DataTableHeaderProps<TD
           {headerGroup.headers.map((header) => (
             <TableHead
               key={header.id}
-              className="text-xs truncate"
-              style={{ width: header.getSize() }}
+              className="text-xs truncate px-2 py-1 sm:px-4 sm:py-2"
+              style={{ maxWidth: `${header.getSize()}px` }}
             >
               {header.isPlaceholder
                 ? null
-                : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                : flexRender(header.column.columnDef.header, header.getContext())}
             </TableHead>
           ))}
         </TableRow>

@@ -1,26 +1,51 @@
 "use client";
 
-import { Scanner, IScannerProps, IDetectedBarcode } from '@yudiel/react-qr-scanner';
+import { useState } from "react";
+import { Scanner, IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import { Button } from "@/components/ui/button";
+import { ScanLine } from "lucide-react";
+import { QRScannerToggleProps } from "@/lib/types";
 
-// Extend IScannerProps with our custom onScan prop
-interface QRScannerProps extends Omit<IScannerProps, 'onScan'> {
-  onScan: (detectedCodes: IDetectedBarcode[]) => Promise<void>;
-}
 
-export function QRScanner({ onScan, ...props }: QRScannerProps) {
+
+export default function QRScannerToggle({ onScan, ...props }: QRScannerToggleProps) {
+  const [isScanning, setIsScanning] = useState(false);
+
   return (
-    <Scanner
-      {...props}
-      onScan={async (detectedCodes: IDetectedBarcode[]) => {
-        await onScan(detectedCodes);
-      }}
-      onError={(error: unknown) => {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error("An unknown error occurred:", error);
-        }
-      }}
-    />
+    <div className="w-full max-w-md mx-auto">
+      {!isScanning ? (
+        <Button
+          onClick={() => setIsScanning(true)}
+          className="w-full"
+        >
+          <ScanLine />Start QR Code Scan
+        </Button>
+      ) : (
+        <div className="space-y-2">
+          <Scanner
+            {...props}
+            onScan={async (detectedCodes: IDetectedBarcode[]) => {
+              await onScan(detectedCodes);
+              setIsScanning(false);
+            }}
+            onError={(error: unknown) => {
+              if (error instanceof Error) {
+                console.error(error.message);
+              } else {
+                console.error("An unknown error occurred:", error);
+              }
+              setIsScanning(false); 
+            }}
+          />
+          <Button
+            onClick={() => setIsScanning(false)}
+            variant="outline"
+            className="w-full"
+          >
+            Cancel Scan
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

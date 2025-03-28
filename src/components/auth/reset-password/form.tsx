@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {  updatePassword } from "@/lib/auth";
+import { updatePassword } from "@/lib/auth";
 import { ResetFormProps, ResetPasswordFormSchema } from "@/lib/types";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -50,10 +50,15 @@ function ResetPasswordForm({ back }: ResetFormProps) {
       toast.success("✅ Password Reset Successfully!");
       router.push(`/${role}/login`);
     } catch (error) {
-      console.error("Reset password error:", error);
+      toast.error("Reset password error");
       if (error instanceof Error) {
-        if (error.message.includes("Invalid login credentials") || error.message.includes("token")) {
-          toast.error("❌ Reset link expired or invalid. Please request a new one.");
+        if (
+          error.message.includes("Invalid login credentials") ||
+          error.message.includes("token")
+        ) {
+          toast.error(
+            "❌ Reset link expired or invalid. Please request a new one."
+          );
         } else {
           toast.error(error.message || "❌ Failed to reset password.");
         }
@@ -114,18 +119,12 @@ function ResetPasswordForm({ back }: ResetFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Must match the new password
-                  </FormDescription>
+                  <FormDescription>Must match the new password</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button 
-              className="w-full" 
-              type="submit" 
-              disabled={isLoading}
-            >
+            <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? "Resetting..." : "Reset Password"}
             </Button>
           </form>

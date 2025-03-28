@@ -1,31 +1,9 @@
-// stats/index.ts
+
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { ProjectStats, TimeSeriesData, UserStats } from "@/lib/types";
 import { ProjectStatus } from "@prisma/client";
-
-
-
- interface ProjectStats {
-    totalProjects: number;
-    publicProjects: number;
-    privateProjects: number;
-    unlistedProjects: number;
-    avgUsersPerProject: number;
-  }
-  
-interface UserStats {
-    totalUsers: number;
-    activeUsers: number;
-    usersByProject: { projectId: string; projectName: string; userCount: number }[];
-  }
-  
- interface TimeSeriesData {
-    date: string;
-    value: number;
-    [key: string]: string | number; // Match StatsCard6 and StatsCard8's DataPoint
-  }
-  
 
 
 export async function getProjectStats(businessId: string): Promise<ProjectStats> {
@@ -41,8 +19,8 @@ export async function getProjectStats(businessId: string): Promise<ProjectStats>
     }),
   ]);
 
-  const avgUsersPerProject = projectCount > 0 
-    ? users.reduce((sum, curr) => sum + curr._count.id, 0) / projectCount 
+  const avgUsersPerProject = projectCount > 0
+    ? users.reduce((sum, curr) => sum + curr._count.id, 0) / projectCount
     : 0;
 
   return {

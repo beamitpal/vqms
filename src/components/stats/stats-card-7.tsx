@@ -4,30 +4,9 @@ import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
 import { Separator } from "@/components/ui/separator"
+import { VerticalBarChartCardProps } from "@/lib/types"
 
-interface DataPoint {
-  activity: string
-  value: number
-  label: string
-  fill?: string
-}
 
-interface Metric {
-  label: string
-  value: number | string
-  unit: string
-}
-
-interface VerticalBarChartCardProps {
-  data: DataPoint[]
-  metrics: Metric[]
-  config: { [key: string]: { label: string; color: string } }
-  cardClassName?: string
-  chartHeight?: string
-  barSize?: number
-  barGap?: number
-  valueFormatter?: (value: number | string) => string
-}
 
 export default function StatsCard7({
   data,
@@ -49,6 +28,7 @@ export default function StatsCard7({
           <BarChart
             margin={{ left: 0, right: 0, top: 0, bottom: 10 }}
             data={data}
+            
             layout="vertical"
             barSize={barSize}
             barGap={barGap}

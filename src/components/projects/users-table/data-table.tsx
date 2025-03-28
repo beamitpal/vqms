@@ -1,7 +1,11 @@
-// src/components/projects/users-table/data-table.tsx
 "use client";
 
-import { ColumnDef, useReactTable, getCoreRowModel, getPaginationRowModel, getFilteredRowModel } from "@tanstack/react-table";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+} from "@tanstack/react-table";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { Table } from "@/components/ui/table";
 import { DataTableHeader } from "./data-table-header";
@@ -9,14 +13,7 @@ import { DataTableBody } from "./data-table-body";
 import { DataTablePagination } from "./data-table-pagination";
 import { cn } from "@/lib/utils";
 import { User } from "@prisma/client";
-
-interface DataTableProps<TData = User, TValue = unknown> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  filterKey?: string;
-  filterOptions?: { label: string; value: string; icon?: React.ComponentType<{ className?: string }> }[];
-  className?: string;
-}
+import { DataTableProps } from "@/lib/types";
 
 export function DataTable<TData = User, TValue = unknown>({
   columns,
@@ -40,7 +37,12 @@ export function DataTable<TData = User, TValue = unknown>({
   });
 
   return (
-    <div className={cn("space-y-4 w-full max-w-full overflow-hidden", className)}>
+    <div
+      className={cn(
+        "space-y-4 w-full max-w-full overflow-x-auto sm:overflow-x-hidden",
+        className
+      )}
+    >
       {(filterKey || filterOptions) && (
         <DataTableToolbar
           table={table}
@@ -48,8 +50,8 @@ export function DataTable<TData = User, TValue = unknown>({
           filterOptions={filterOptions}
         />
       )}
-      <div className="rounded-md border w-full max-w-full overflow-hidden">
-        <Table className="w-full table-auto min-w-0">
+      <div className="rounded-md border w-full max-w-full overflow-x-auto sm:overflow-x-hidden">
+        <Table className="w-full min-w-[300px] table-auto">
           <DataTableHeader table={table} />
           <DataTableBody table={table} />
         </Table>

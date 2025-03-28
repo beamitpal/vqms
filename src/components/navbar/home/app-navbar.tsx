@@ -1,7 +1,7 @@
-// src/components/navbar/business/navbar.tsx
-"use client"; // Add this since we're using a client-side hook
 
-import { usePathname } from "next/navigation"; // Import usePathname
+"use client"; 
+
+import { usePathname } from "next/navigation"; 
 import Logo from "@/components/brand/logo";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function HomeNavbar() {
-  const pathname = usePathname(); // Get the current pathname
+  const pathname = usePathname(); 
 
   // Array of navigation links
   const navLinks = [
@@ -22,7 +22,7 @@ export default function HomeNavbar() {
 
   return (
     <header className="sticky top-0 flex w-full items-center gap-4 border-b bg-background px-4 md:px-6">
-      {/* Logo and Sidebar Trigger */}
+    
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold md:text-base">
           <Logo className="size-8" />
@@ -33,7 +33,7 @@ export default function HomeNavbar() {
         </div>
       </div>
 
-      {/* Navigation Links */}
+  
       <nav className="hidden md:flex flex-col md:flex-row items-center gap-5 text-sm lg:gap-6 flex-1">
         {navLinks.map((link) => {
           const isActive = pathname === link.href; // Check if the current path matches the link
@@ -51,7 +51,7 @@ export default function HomeNavbar() {
         })}
       </nav>
 
-      {/* Login and Signup Buttons */}
+   
       <div className="flex items-center gap-2 ml-auto">
         <Button variant="outline" size="sm" asChild>
           <Link href="/business/login">Login</Link>

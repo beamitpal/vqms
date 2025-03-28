@@ -1,98 +1,51 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { getBusiness } from "@/lib/misc";
-import {
-  getProjectByUsername,
-  listAllProjects,
-} from "@/actions/business/projects";
-import { QRScanner } from "@/components/misc/qr-code-scanner";
 import { Suspense } from "react";
-import { cookies } from "next/headers";
 import { IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import QRScanner from "@/components/misc/qr-code-scanner";
+import ProjectSelector from "@/components/misc/project-selector";
+import Link from "next/link";
+import Logo from "@/components/brand/logo";
+import { listAllProjectsForUser } from "@/actions/users/business";
 
 export default async function BookPage() {
-  const cookieStore = await cookies();
-  const business = await getBusiness({
-    cookies: {
-      get: (name: string) => cookieStore.get(name),
-    },
-  });
-  const businessId = business?.id;
 
-  if (!businessId) {
-    return (
-      <div className="container mx-auto p-4">
-        <Card className="max-w-2xl mx-auto">
-          <CardContent>
-            <p className="text-red-500">Please log in to view projects</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const projects = await listAllProjects({ businessId });
-
-  async function handleSubmit(formData: FormData) {
-    "use server";
-    const cookieStore = await cookies();
-    const business = await getBusiness({
-      cookies: {
-        get: (name: string) => cookieStore.get(name),
-      },
-    });
-    const businessId = business?.id;
-    if (!businessId) return;
-
-    const username = formData.get("username") as string;
-    const project = await getProjectByUsername(username, businessId);
-    if (project) {
-      redirect(`/${project.username}`);
-    }
-  }
+  const projects = await listAllProjectsForUser({ status: "PUBLIC" });
 
   async function handleQrScan(detectedCodes: IDetectedBarcode[]) {
     "use server";
-    const cookieStore = await cookies();
-    const business = await getBusiness({
-      cookies: {
-        get: (name: string) => cookieStore.get(name),
-      },
-    });
-    const businessId = business?.id;
-    if (!businessId) return;
 
     if (detectedCodes && detectedCodes.length > 0) {
-      const data = detectedCodes[0].rawValue; // Extract the raw value from the first detected barcode
+      const data = detectedCodes[0].rawValue;
       const username = data.split("/").pop();
       if (username) {
-        const project = await getProjectByUsername(username, businessId);
-        if (project) {
-          redirect(`/${project.username}`);
-        }
+        redirect(`/${username}`);
       }
     }
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="max-w-2xl mx-auto">
+    <div className="flex flex-col justify-center items-center h-screen space-y-4">
+      <Link
+        href="/business"
+        className="flex items-center gap-2 self-center font-medium"
+      >
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <Logo className="size-16" />
+        </div>
+        VQMS
+      </Link>
+      <Card className="max-w-lg mx-auto bg-background">
         <CardHeader>
-          <CardTitle>Select Project or Scan QR Code</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Select Project or Scan QR Code
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {/* QR Scanner Section */}
+         
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">Scan QR Code</h3>
               <div className="w-full max-w-md mx-auto">
@@ -102,31 +55,24 @@ export default async function BookPage() {
               </div>
             </div>
 
-            {/* Manual Selection Section */}
+        
+            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+
+          
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">
-                Or Select Project Manually
+                Select Business Manually
               </h3>
               {projects.length === 0 ? (
-                <p>No projects available</p>
+                <p>No public projects available</p>
               ) : (
-                <form action={handleSubmit} className="space-y-4">
-                  <Select name="username">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a project" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {projects.map((project) => (
-                        <SelectItem key={project.id} value={project.username}>
-                          {project.name} (@{project.username})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button type="submit" className="w-full">
-                    Go to Project
-                  </Button>
-                </form>
+                <Suspense fallback={<div>Loading project selector...</div>}>
+                  <ProjectSelector projects={projects} />
+                </Suspense>
               )}
             </div>
           </div>

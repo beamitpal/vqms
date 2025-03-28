@@ -1,15 +1,14 @@
-// src/components/projects/users-table/data-table-pagination.tsx
+
 "use client";
 
-import { Table as TanstackTable } from "@tanstack/react-table";
+
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import { User } from "@prisma/client";
+import { DataTablePaginationProps } from "@/lib/types";
 
-interface DataTablePaginationProps<TData = User> {
-  table: TanstackTable<TData>;
-}
+
 
 export function DataTablePagination<TData = User>({ table }: DataTablePaginationProps<TData>) {
   return (

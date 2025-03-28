@@ -9,39 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
-import { ReactNode } from "react";
+import { ComparisonBarCardProps } from "@/lib/types";
 
-interface DataPoint {
-  [key: string]: string | number;
-}
 
-interface ComparisonBarCardProps {
-  // Header props
-  title?: string;
-  description?: string | ReactNode;
 
-  // Data props
-  data: [DataPoint, DataPoint]; // Expecting exactly 2 data points for comparison
-  valueKey: string;
-  labelKey: string;
-
-  // Formatting props
-  valueFormatter?: (value: number) => string;
-  unit?: string;
-
-  // Styling props
-  cardClassName?: string;
-  barHeight?: number;
-  barRadius?: number;
-  primaryColor?: string;
-  secondaryColor?: string;
-  labelFontSize?: number;
-
-  // Configuration props
-  configLabel: string;
-  showValues?: boolean;
-  valueClassName?: string;
-}
 
 export default function StatsCard2({
   title = "Progress",
@@ -54,8 +25,8 @@ export default function StatsCard2({
   cardClassName = "max-w-xs",
   barHeight = 32,
   barRadius = 4,
-  primaryColor = "hsl(var(--chart-1))",
-  secondaryColor = "hsl(var(--muted))",
+  primaryColor = "var(--chart-5)",
+  secondaryColor = "var(--muted)",
   labelFontSize = 12,
   configLabel,
   showValues = true,
@@ -103,7 +74,7 @@ export default function StatsCard2({
             >
               <Bar
                 dataKey={valueKey}
-                fill={`var(--color-${valueKey})`}
+                fill={`var(--chart-4)`}
                 radius={barRadius}
                 barSize={barHeight}
               >
@@ -152,7 +123,7 @@ export default function StatsCard2({
             >
               <Bar
                 dataKey={valueKey}
-                fill={`var(--color-${valueKey})`}
+                fill="var(--chart-3)"
                 radius={barRadius}
                 barSize={barHeight}
               >
@@ -161,7 +132,7 @@ export default function StatsCard2({
                   dataKey={labelKey}
                   offset={8}
                   fontSize={labelFontSize}
-                  fill="hsl(var(--muted-foreground))"
+                  fill="var(--muted-foreground)"
                 />
               </Bar>
               <YAxis dataKey={labelKey} type="category" tickCount={1} hide />

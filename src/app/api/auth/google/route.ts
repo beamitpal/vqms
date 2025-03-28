@@ -1,4 +1,4 @@
-// api/auth/google/route.ts
+
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { cookies } from "next/headers";

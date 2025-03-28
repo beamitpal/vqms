@@ -4,8 +4,8 @@ export default function UserLayout({
     children: React.ReactNode;
   }) {
     return(
-        <section>
+        <main className=" bg-muted/40">
             {children}
-        </section>
+        </main>
     )
   }

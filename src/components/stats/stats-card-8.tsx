@@ -1,39 +1,20 @@
-"use client"
+"use client";
 
-import { Area, AreaChart, XAxis, YAxis } from "recharts"
-import { ReactNode } from "react"
+import { Area, AreaChart, XAxis, YAxis } from "recharts";
+
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-
-interface DataPoint {
-  [key: string]: string | number
-}
-
-interface AreaChartCardProps {
-  description?: string
-  value: string | number
-  unit: string
-  secondaryValue?: string | number
-  secondaryUnit?: string
-  data: DataPoint[]
-  dataKey: string
-  xAxisKey: string
-  configLabel: string
-  cardClassName?: string
-  chartColor?: string
-  valueFormatter?: (value: number | string) => string
-  tooltipFormatter?: (value: string | number) => ReactNode
-}
+} from "@/components/ui/chart";
+import { AreaChartCardProps } from "@/lib/types";
 
 export default function StatsCard8({
   description,
@@ -46,7 +27,7 @@ export default function StatsCard8({
   xAxisKey,
   configLabel,
   cardClassName = "max-w-xs",
-  chartColor = "hsl(var(--chart-2))",
+  chartColor = "var(--chart-3)",
   valueFormatter = (value) => String(value),
   tooltipFormatter = (value) => (
     <div className="flex min-w-[120px] items-center text-xs text-muted-foreground">
@@ -95,8 +76,16 @@ export default function StatsCard8({
             <YAxis domain={["dataMin - 5", "dataMax + 2"]} hide />
             <defs>
               <linearGradient id={`fill${dataKey}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={`var(--color-${dataKey})`} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={`var(--color-${dataKey})`} stopOpacity={0.1} />
+                <stop
+                  offset="5%"
+                  stopColor={`var(--chart-4)`}
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={`var(--chart-5)`}
+                  stopOpacity={0.1}
+                />
               </linearGradient>
             </defs>
             <Area
@@ -104,7 +93,7 @@ export default function StatsCard8({
               type="natural"
               fill={`url(#fill${dataKey})`}
               fillOpacity={0.4}
-              stroke={`var(--color-${dataKey})`}
+              stroke={`var(--chart-1)`}
             />
             <ChartTooltip
               cursor={false}
@@ -115,6 +104,5 @@ export default function StatsCard8({
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
-

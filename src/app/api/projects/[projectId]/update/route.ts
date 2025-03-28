@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ProjectUpdateInput } from "@/lib/types";
 import { Prisma } from "@prisma/client";
+import { toast } from "sonner";
 
 export async function PATCH(request: Request, { params }: { params: { projectId: string } }) {
   const { projectId } = params;
@@ -39,8 +40,8 @@ export async function PATCH(request: Request, { params }: { params: { projectId:
     });
 
     return NextResponse.json({ success: true, project: updatedProject });
-  } catch (error) {
-    console.error("Update project error:", error);
+  } catch {
+    toast.error("Update project error");
     return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
   }
 }

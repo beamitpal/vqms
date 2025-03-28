@@ -9,25 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
-
-interface DataPoint {
-  [key: string]: string | number
-}
-
-interface EnergyBarChartCardProps {
-  title: string
-  description?: string
-  value: number | string
-  unit: string
-  data: DataPoint[]
-  dataKey: string
-  xAxisKey: string
-  configLabel: string
-  cardClassName?: string
-  chartWidth?: string
-  chartColor?: string
-  valueFormatter?: (value: number | string) => string
-}
+import { EnergyBarChartCardProps } from "@/lib/types"
 
 export default function StatsCard6({
   title,
@@ -40,7 +22,7 @@ export default function StatsCard6({
   configLabel,
   cardClassName = "max-w-xs",
   chartWidth = "64px",
-  chartColor = "hsl(var(--chart-1))",
+  chartColor = "var(--chart-4)",
   valueFormatter = (value) => String(value),
 }: EnergyBarChartCardProps) {
   return (
@@ -70,7 +52,7 @@ export default function StatsCard6({
           >
             <Bar
               dataKey={dataKey}
-              fill={`var(--color-${dataKey})`}
+              fill={`var(--chart-3)`}
               radius={2}
               fillOpacity={0.2}
               activeIndex={data.length - 1}

@@ -36,9 +36,11 @@ export async function middleware(req: NextRequest) {
   const { data, error } = await supabase.auth.getSession();
 
   if (error || !data.session) {
+    if (pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
     return NextResponse.redirect(new URL("/business/login", req.url));
   }
-
   const { data: userData } = await supabase.auth.getUser();
 
   if (!userData.user) {
@@ -76,6 +78,7 @@ export async function middleware(req: NextRequest) {
     });
   }
 
+  
   return response;
 }
 

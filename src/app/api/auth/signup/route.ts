@@ -20,17 +20,17 @@ export async function POST(request: Request) {
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            options: { data: { fullname, role } }, // Include role in user metadata
+            options: { data: { fullname, role } }, 
         });
 
         if (error) throw error;
 
-        // If email confirmation is required, session will be null
+      
         if (!data.user) {
             return NextResponse.json({ error: "User creation failed" }, { status: 500 });
         }
 
-        // Success response indicating email confirmation is needed
+   
         return NextResponse.json({
             success: true,
             message: "User created successfully. Please check your email to confirm your account.",

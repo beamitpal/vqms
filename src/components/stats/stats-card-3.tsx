@@ -3,37 +3,10 @@
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
+import { RadialProgressCardProps } from "@/lib/types"
 
 
-interface Metric {
-  label: string
-  current: number
-  goal: number
-  unit: string
-  color: string
-}
 
-interface RadialProgressCardProps {
-  // Data props
-  metrics: Metric[]
-  
-  // Styling props
-  cardClassName?: string
-  chartClassName?: string
-  barSize?: number
-  innerRadius?: string
-  cornerRadius?: number
-  
-  // Display props
-  valueFormatter?: (current: number, goal: number) => string
-  showTextValues?: boolean
-  textClassName?: string
-  
-  // Chart configuration
-  startAngle?: number
-  endAngle?: number
-  domain?: [number, number]
-}
 
 export default function StatsCard3({
   metrics,
@@ -61,7 +34,7 @@ export default function StatsCard3({
   const chartData = metrics.map(metric => ({
     activity: metric.label.toLowerCase(),
     value: (metric.current / metric.goal) * 100,
-    fill: `var(--color-${metric.label.toLowerCase()})`,
+    fill: `var(--chart-3)`,
   }))
 
   return (
@@ -95,6 +68,8 @@ export default function StatsCard3({
               top: -10,
               bottom: -10,
             }}
+            
+            
             data={chartData}
             innerRadius={innerRadius}
             barSize={barSize}

@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 
 export async function POST(request: Request, { params }: { params: { projectId: string } }) {
   const { projectId } = params;
@@ -33,8 +34,8 @@ export async function POST(request: Request, { params }: { params: { projectId: 
     });
 
     return NextResponse.json({ success: true, project: updatedProject });
-  } catch (error) {
-    console.error("Regenerate API key error:", error);
+  } catch  {
+    toast.error("Regenerate API key error");
     return NextResponse.json({ error: "Failed to regenerate API key" }, { status: 500 });
   }
 }

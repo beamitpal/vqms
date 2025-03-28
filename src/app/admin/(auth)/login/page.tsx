@@ -1,50 +1,48 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import LoginForm from "@/components/auth/login/form";
-import { signInAsAdmin, resendVerificationEmail } from "@/lib/auth";
+import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
+import { resendVerificationEmail } from "@/lib/auth";
+import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
-function Page() {
+
+function AdminLoginPage() {
   const router = useRouter();
   const [pendingResend, setPendingResend] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
-  const [checkingSession, setCheckingSession] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ Check if user is already logged in
-  useEffect(() => {
-    async function checkSession() {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        router.replace("/admin"); // Redirect if session exists
-      } else {
-        setCheckingSession(false); // Allow rendering login form
-      }
-    }
-
-    checkSession();
-  }, [router]);
-
-  const handleLoginSubmit = async (values: {
-    email: string;
-    password: string;
-  }) => {
+  const handleLoginSubmit = async (values: LoginFormValues) => {
     try {
-      await signInAsAdmin(values.email, values.password);
+      setIsLoading(true);
+
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, role: "admin" }),
+        credentials: "include",
+      });
+
+      const response = await res.json();
+
+      if (!res.ok) {
+        throw new Error(response.error || "Login failed");
+      }
+
       toast.success("Login successful! Redirecting...");
       router.push("/admin");
-      console.log("✅ router.push executed"); // Debug log
+      router.refresh();
     } catch (error) {
-      console.error("❌ Login error:", error);
+      toast.error("Login Failed");
       if (error instanceof Error) {
         if (error.message.includes("Email not confirmed")) {
           setUnverifiedEmail(values.email);
-          toast.error("⚠️ Email not confirmed! Please check your inbox.", {
+          toast.error("Email not confirmed! Please check your inbox.", {
             action: {
               label: "Resend",
               onClick: () => handleResendEmail(values.email),
@@ -56,6 +54,8 @@ function Page() {
       } else {
         toast.error("An unexpected error occurred.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,31 +63,32 @@ function Page() {
     try {
       setPendingResend(true);
       await resendVerificationEmail(email);
-      toast.success("✅ Verification email sent! Check your inbox.");
+      toast.success("Verification email sent! Check your inbox.");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message || "❌ Failed to send verification email.");
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification email."
+      );
     } finally {
       setPendingResend(false);
     }
   };
 
-  // ✅ Show loading state while checking session
-  if (checkingSession) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen space-y-4">
-        <Skeleton className=" bg-background rounded-md h-98 w-86 max-w-sm" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col justify-center items-center h-screen space-y-4">
+      <Link
+        href="/admin"
+        className="flex items-center gap-2 self-center font-medium"
+      >
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <Logo className="size-16" />
+        </div>
+        VQMS
+      </Link>
       <LoginForm
         onSubmit={handleLoginSubmit}
+        isLoading={isLoading}
         forgot={
           <Link
             href="/admin/forgot-password"
@@ -105,8 +106,8 @@ function Page() {
           </p>
           <Button
             onClick={() => handleResendEmail(unverifiedEmail)}
-            disabled={pendingResend}
-            className=" w-full"
+            disabled={pendingResend || isLoading}
+            className="w-full"
           >
             {pendingResend ? "Sending..." : "Resend Verification Email"}
           </Button>
@@ -116,4 +117,4 @@ function Page() {
   );
 }
 
-export default Page;
+export default AdminLoginPage;

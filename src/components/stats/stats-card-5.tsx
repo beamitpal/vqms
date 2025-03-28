@@ -9,25 +9,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
+import { BarChartCardProps } from "@/lib/types"
 
-interface DataPoint {
-  [key: string]: string | number | boolean | null | undefined
-}
 
-interface BarChartCardProps {
-  title: string
-  description?: string
-  value: number | string
-  unit: string
-  data: DataPoint[]
-  dataKey: string
-  xAxisKey: string
-  configLabel: string
-  cardClassName?: string
-  chartWidth?: string
-  chartColor?: string
-  valueFormatter?: (value: number | string) => string
-}
 
 export default function StatsCard5({
   title,
@@ -40,7 +24,7 @@ export default function StatsCard5({
   configLabel,
   cardClassName = "max-w-xs",
   chartWidth = "72px",
-  chartColor = "hsl(var(--chart-1))",
+  chartColor = "var(--chart-3)",
   valueFormatter = (value) => String(value),
 }: BarChartCardProps) {
   return (
@@ -70,7 +54,7 @@ export default function StatsCard5({
           >
             <Bar
               dataKey={dataKey}
-              fill={`var(--color-${dataKey})`}
+              fill={`var(--chart-4)`}
               radius={2}
               fillOpacity={0.2}
               activeIndex={data.length - 1}

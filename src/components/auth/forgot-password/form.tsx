@@ -49,7 +49,7 @@ function ForgotPasswordForm({ back }: ForgotFormProps) {
       toast.success("✅ Password reset email sent! Check your inbox.");
       form.reset(); // Clear the form after success
     } catch (error) {
-      console.error("Forgot password error:", error);
+      toast.error("Forgot password error");
       if (error instanceof Error) {
         if (error.message.includes("User not found")) {
           toast.error("❌ No account found with this email.");

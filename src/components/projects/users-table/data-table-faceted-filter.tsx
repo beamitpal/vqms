@@ -1,7 +1,7 @@
-// src/components/projects/users-table/data-table-faceted-filter.tsx
+
 "use client";
 
-import { Column } from "@tanstack/react-table";
+
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
@@ -11,16 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { User } from "@prisma/client";
+import { DataTableFacetedFilterProps } from "@/lib/types";
 
-interface DataTableFacetedFilterProps<TData = User, TValue = unknown> {
-  column: Column<TData, TValue>;
-  title?: string;
-  options: {
-    label: string;
-    value: string;
-    icon?: React.ComponentType<{ className?: string }>;
-  }[];
-}
 
 export function DataTableFacetedFilter<TData = User, TValue = unknown>({
   column,

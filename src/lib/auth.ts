@@ -1,4 +1,4 @@
-// lib/auth.ts
+
 import { supabase } from "./supabase";
 
 export async function resendVerificationEmail(email: string): Promise<void> {
@@ -25,11 +25,17 @@ export async function signInWithGoogle(role: "admin" | "business"): Promise<void
   if (!process.env.NEXT_PUBLIC_APP_URL) {
     throw new Error("NEXT_PUBLIC_APP_URL environment variable is required");
   }
-  // Redirect to server-side Google OAuth endpoint
+  
   window.location.href = `/api/auth/google?role=${role}`;
 }
 
 export async function getBusiness() {
+  const { data: userData, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return userData?.user;
+}
+
+export async function getAdmin() {
   const { data: userData, error } = await supabase.auth.getUser();
   if (error) throw error;
   return userData?.user;
