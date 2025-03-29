@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { v4 as uuidv4 } from "uuid";
 import { createProjectSchema, ProjectListItem } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, RefreshCw } from "lucide-react"; // Added RefreshCw for loading
+import { PlusIcon, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,13 +31,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { createProject, listAllProjects } from "@/actions/business/projects";
 import { getBusiness } from "@/lib/auth";
 
-
-
 export default function Page() {
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
-  const [loading, setLoading] = useState(true); 
-  const [isCreating, setIsCreating] = useState(false); 
-  const [error, setError] = useState<string | null>(null); 
+  const [loading, setLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -71,7 +69,7 @@ export default function Page() {
 
   async function onSubmit(values: z.infer<typeof createProjectSchema>) {
     setIsCreating(true);
-    setFormError(null); 
+    setFormError(null);
 
     try {
       const businessId = await getBusiness();
@@ -96,20 +94,98 @@ export default function Page() {
         createProjectArr.businessEmail,
         createProjectArr.data
       );
-      await fetchProjects(); 
+      await fetchProjects();
       form.reset();
-      setIsDialogOpen(false); 
+      setIsDialogOpen(false);
     } catch (err) {
-     
       if (err instanceof Error && err.message.includes("Unique constraint failed on the fields: (`username`)")) {
         setFormError("This username is already taken. Please choose a different one.");
       } else {
         setFormError(err instanceof Error ? err.message : "Failed to create project");
       }
     } finally {
-      setIsCreating(false); 
+      setIsCreating(false);
     }
   }
+
+
+  const CreateProjectDialog = () => (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button size="lg" className="mt-4">
+          <PlusIcon className="mr-2 h-4 w-4" />
+          Create Project
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create Project</DialogTitle>
+          <DialogDescription>Create a project to get started</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="fullname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="ABC" {...field} />
+                  </FormControl>
+                  <FormDescription>This is your public display name.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project URL</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., google (for https://example.com/google)"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>This is your unique project URL.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Type your project description here."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>Describe your project.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {formError && <p className="text-red-500 text-sm">{formError}</p>}
+            <Button className="w-full" type="submit" disabled={isCreating}>
+              {isCreating ? (
+                <RefreshCw className="animate-spin mr-2" />
+              ) : (
+                <PlusIcon className="mr-2" />
+              )}
+              Create Project
+            </Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <>
@@ -218,75 +294,7 @@ export default function Page() {
             <p className="text-sm text-muted-foreground">
               You can save time as soon as you add a project.
             </p>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="lg" className="mt-4">
-                  <PlusIcon className="mr-2 h-4 w-4" />
-                  Create Project
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Create Project</DialogTitle>
-                  <DialogDescription>Create a project to get started</DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="fullname"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Project Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="ABC" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Project URL</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., google" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Project Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Type your project description here."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {formError && <p className=" text-sm">{formError}</p>}
-                    <Button className="w-full" type="submit" disabled={isCreating}>
-                      {isCreating ? (
-                        <RefreshCw className="animate-spin mr-2" />
-                      ) : (
-                        <PlusIcon className="mr-2" />
-                      )}
-                      Create Project
-                    </Button>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
+            <CreateProjectDialog />
           </div>
         </div>
       )}

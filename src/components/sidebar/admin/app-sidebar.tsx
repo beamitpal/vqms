@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { LayoutDashboard, Settings2 } from "lucide-react";
 
@@ -16,7 +17,7 @@ export function AdminAppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-
+  const { toggleSidebar } = useSidebar();
   const data = {
     navMain: [
       {
@@ -48,7 +49,7 @@ export function AdminAppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="/admin">
+              <Link href="/admin" onClick={toggleSidebar}>
                 <Logo className="size-10" />
                 <span className="text-base font-semibold">VQMS</span>
               </Link>
@@ -65,7 +66,7 @@ export function AdminAppSidebar({
                   isActive={isRouteActive(pathname, item.url)}
                   tooltip={item.title}
                 >
-                  <Link href={item.url}>
+                  <Link href={item.url} onClick={toggleSidebar}>
                     <item.icon />
                     <span>{item.title}</span>
                   </Link>

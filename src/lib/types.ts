@@ -359,6 +359,7 @@ export interface SystemStats {
 }
 
 export type EnvSchemaType = {
+  NEXT_PUBLIC_WEB_3_FORM:string;
   NEXT_PUBLIC_APP_URL: string;
 };
 
@@ -552,3 +553,7 @@ export type CustomFieldTemplate = Record<
   string,
   { type: "text" | "textarea"; defaultValue: string }
 >;
+
+export interface LogoProps extends React.ComponentProps<"svg"> {
+  mode?: "light" | "dark"; // Optional prop to specify the mode
+}

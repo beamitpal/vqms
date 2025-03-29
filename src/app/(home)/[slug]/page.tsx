@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { ProjectWithUsers, UserData } from "@/lib/types"; // Import UserData
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, RefreshCw } from "lucide-react";
 import Logo from "@/components/brand/logo";
 import { getProjectByUsernameForUser } from "@/actions/users/business";
 
@@ -48,9 +48,9 @@ export default function ProjectPage() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
+      <div className="h-screen flex justify-center items-center">
+      <RefreshCw className="animate-spin m-2" />
+    </div>
     );
   }
 
@@ -153,7 +153,7 @@ export default function ProjectPage() {
           <Link href={`/${slug}/add`}>
             <Button className="w-full">
               <ExternalLink />
-              Add Yourself to Project
+              Add Yourself to Business Queue
             </Button>
           </Link>
         </div>

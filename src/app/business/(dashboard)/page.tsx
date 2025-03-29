@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -20,7 +19,7 @@ import { getBusiness } from "@/lib/auth";
 import { toast } from "sonner";
 import { ProjectStats, TimeSeriesData, UserStats } from "@/lib/types";
 import { Business } from "@prisma/client";
-
+import { RefreshCw } from "lucide-react";
 
 export default function DashboardPage() {
   const [projectStats, setProjectStats] = useState<ProjectStats | null>(null);
@@ -60,7 +59,11 @@ export default function DashboardPage() {
   }, []);
 
   if (!projectStats || !userStats || !business) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <RefreshCw className="animate-spin m-2" />
+      </div>
+    );
   }
 
   const dateFormatter = (value: string | number | Date): string => {
@@ -89,7 +92,6 @@ export default function DashboardPage() {
 
   return (
     <div className="chart-wrapper mx-auto flex max-w-6xl flex-col flex-wrap items-start justify-center gap-6 p-6 sm:flex-row sm:p-8">
-  
       <div className="grid w-full gap-6 sm:grid-cols-2 lg:max-w-[22rem] lg:grid-cols-1 xl:max-w-[25rem]">
         <StatsCard1
           title={projectStats.totalProjects}
@@ -125,7 +127,6 @@ export default function DashboardPage() {
         />
       </div>
 
-   
       <div className="grid w-full flex-1 gap-6 lg:max-w-[20rem]">
         <StatsCard2
           title="Project Status"
@@ -173,7 +174,6 @@ export default function DashboardPage() {
         />
       </div>
 
-    
       <div className="grid w-full flex-1 gap-6">
         <StatsCard3
           metrics={[

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { supabase } from "@/lib/supabase"; 
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,17 +27,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft } from "lucide-react";
-import { AccountDetailsFormSchema, AccountDetailsFormValues, AvatarFormSchema, AvatarFormValues, NewDetailsFormSchema, NewDetailsFormValues, PasswordFormSchema, PasswordFormValues } from "@/lib/types";
-
-
+import { ArrowLeft, RefreshCw } from "lucide-react";
+import {
+  AccountDetailsFormSchema,
+  AccountDetailsFormValues,
+  AvatarFormSchema,
+  AvatarFormValues,
+  NewDetailsFormSchema,
+  NewDetailsFormValues,
+  PasswordFormSchema,
+  PasswordFormValues,
+} from "@/lib/types";
 
 export default function AccountPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<{ id: string; email: string; user_metadata?: { full_name?: string; phone?: string; bio?: string; avatar_url?: string } } | null>(null);
+  const [user, setUser] = useState<{
+    id: string;
+    email: string;
+    user_metadata?: {
+      full_name?: string;
+      phone?: string;
+      bio?: string;
+      avatar_url?: string;
+    };
+  } | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const router = useRouter();
-
 
   const accountForm = useForm<AccountDetailsFormValues>({
     resolver: zodResolver(AccountDetailsFormSchema),
@@ -61,20 +76,28 @@ export default function AccountPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error || !user) {
         toast.error("❌ Failed to load user data. Please log in again.");
         router.push("/login");
         return;
       }
       setUser(user);
-      accountForm.reset({ email: user.email || "", fullName: user.user_metadata?.full_name || "" });
-      newDetailsForm.reset({ phone: user.user_metadata?.phone || "", bio: user.user_metadata?.bio || "" });
+      accountForm.reset({
+        email: user.email || "",
+        fullName: user.user_metadata?.full_name || "",
+      });
+      newDetailsForm.reset({
+        phone: user.user_metadata?.phone || "",
+        bio: user.user_metadata?.bio || "",
+      });
       setAvatarPreview(user.user_metadata?.avatar_url || null);
     };
     fetchUser();
   }, [accountForm, newDetailsForm, router]);
-
 
   async function onAccountSubmit(values: AccountDetailsFormValues) {
     setIsLoading(true);
@@ -92,7 +115,6 @@ export default function AccountPage() {
       setIsLoading(false);
     }
   }
-
 
   async function onNewDetailsSubmit(values: NewDetailsFormValues) {
     setIsLoading(true);
@@ -123,15 +145,14 @@ export default function AccountPage() {
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-
-      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
       const { error: updateError } = await supabase.auth.updateUser({
         data: { avatar_url: publicUrl },
@@ -148,7 +169,6 @@ export default function AccountPage() {
       setIsLoading(false);
     }
   }
-
 
   async function onPasswordSubmit(values: PasswordFormValues) {
     setIsLoading(true);
@@ -167,7 +187,6 @@ export default function AccountPage() {
     }
   }
 
-
   function handleError(error: unknown) {
     if (error instanceof Error) {
       if (error.message.includes("Email rate limit exceeded")) {
@@ -182,7 +201,12 @@ export default function AccountPage() {
     }
   }
 
-  if (!user && !isLoading) return null; // Or a loading spinner
+  if (!user && !isLoading)
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <RefreshCw className="animate-spin m-2" />
+      </div>
+    ); 
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -198,18 +222,23 @@ export default function AccountPage() {
         </Button>
         <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-        
           <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-         
             <Card className="bg-background">
               <CardHeader>
-                <CardTitle className="text-2xl font-semibold">Account Details</CardTitle>
-                <CardDescription>Update your email and full name.</CardDescription>
+                <CardTitle className="text-2xl font-semibold">
+                  Account Details
+                </CardTitle>
+                <CardDescription>
+                  Update your email and full name.
+                </CardDescription>
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
                 <Form {...accountForm}>
-                  <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={accountForm.handleSubmit(onAccountSubmit)}
+                    className="space-y-6"
+                  >
                     <FormField
                       control={accountForm.control}
                       name="email"
@@ -217,7 +246,12 @@ export default function AccountPage() {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="Enter your email" disabled={isLoading} {...field} />
+                            <Input
+                              type="email"
+                              placeholder="Enter your email"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription>Your login email.</FormDescription>
                           <FormMessage />
@@ -231,14 +265,23 @@ export default function AccountPage() {
                         <FormItem>
                           <FormLabel>Full Name</FormLabel>
                           <FormControl>
-                            <Input type="text" placeholder="Enter your full name" disabled={isLoading} {...field} />
+                            <Input
+                              type="text"
+                              placeholder="Enter your full name"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription>2-100 characters.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button className="w-full" type="submit" disabled={isLoading}>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      disabled={isLoading}
+                    >
                       {isLoading ? "Updating..." : "Update Details"}
                     </Button>
                   </form>
@@ -246,16 +289,22 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
-        
             <Card className="bg-background">
               <CardHeader>
-                <CardTitle className="text-2xl font-semibold">Additional Details</CardTitle>
-                <CardDescription>Add or update your phone number and bio.</CardDescription>
+                <CardTitle className="text-2xl font-semibold">
+                  Additional Details
+                </CardTitle>
+                <CardDescription>
+                  Add or update your phone number and bio.
+                </CardDescription>
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
                 <Form {...newDetailsForm}>
-                  <form onSubmit={newDetailsForm.handleSubmit(onNewDetailsSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={newDetailsForm.handleSubmit(onNewDetailsSubmit)}
+                    className="space-y-6"
+                  >
                     <FormField
                       control={newDetailsForm.control}
                       name="phone"
@@ -263,9 +312,16 @@ export default function AccountPage() {
                         <FormItem>
                           <FormLabel>Phone Number</FormLabel>
                           <FormControl>
-                            <Input type="tel" placeholder="Enter your phone number" disabled={isLoading} {...field} />
+                            <Input
+                              type="tel"
+                              placeholder="Enter your phone number"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
-                          <FormDescription>Optional, 10-15 digits.</FormDescription>
+                          <FormDescription>
+                            Optional, 10-15 digits.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -277,14 +333,25 @@ export default function AccountPage() {
                         <FormItem>
                           <FormLabel>Bio</FormLabel>
                           <FormControl>
-                            <Input type="text" placeholder="Enter a short bio" disabled={isLoading} {...field} />
+                            <Input
+                              type="text"
+                              placeholder="Enter a short bio"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
-                          <FormDescription>Optional, max 500 characters.</FormDescription>
+                          <FormDescription>
+                            Optional, max 500 characters.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button className="w-full" type="submit" disabled={isLoading}>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      disabled={isLoading}
+                    >
                       {isLoading ? "Updating..." : "Update Details"}
                     </Button>
                   </form>
@@ -293,22 +360,32 @@ export default function AccountPage() {
             </Card>
           </div>
 
-        
           <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-           
             <Card className="bg-background">
               <CardHeader>
-                <CardTitle className="text-2xl font-semibold">Update Avatar</CardTitle>
-                <CardDescription>Upload a new profile picture (JPEG, PNG, GIF, max 5MB).</CardDescription>
+                <CardTitle className="text-2xl font-semibold">
+                  Update Avatar
+                </CardTitle>
+                <CardDescription>
+                  Upload a new profile picture (JPEG, PNG, GIF, max 5MB).
+                </CardDescription>
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
                 <Form {...avatarForm}>
-                  <form onSubmit={avatarForm.handleSubmit(onAvatarSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={avatarForm.handleSubmit(onAvatarSubmit)}
+                    className="space-y-6"
+                  >
                     <div className="flex justify-center mb-4">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src={avatarPreview || "/default-avatar.png"} alt="User avatar" />
-                        <AvatarFallback>{user?.user_metadata?.full_name?.[0] || "U"}</AvatarFallback>
+                        <AvatarImage
+                          src={avatarPreview || "/default-avatar.png"}
+                          alt="User avatar"
+                        />
+                        <AvatarFallback>
+                          {user?.user_metadata?.full_name?.[0] || "U"}
+                        </AvatarFallback>
                       </Avatar>
                     </div>
                     <FormField
@@ -331,12 +408,18 @@ export default function AccountPage() {
                               }}
                             />
                           </FormControl>
-                          <FormDescription>JPEG, PNG, or GIF, max 5MB.</FormDescription>
+                          <FormDescription>
+                            JPEG, PNG, or GIF, max 5MB.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button className="w-full" type="submit" disabled={isLoading || !avatarForm.watch("avatar")}>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      disabled={isLoading || !avatarForm.watch("avatar")}
+                    >
                       {isLoading ? "Uploading..." : "Upload Avatar"}
                     </Button>
                   </form>
@@ -344,16 +427,20 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
-           
             <Card className="bg-background">
               <CardHeader>
-                <CardTitle className="text-2xl font-semibold">Update Password</CardTitle>
+                <CardTitle className="text-2xl font-semibold">
+                  Update Password
+                </CardTitle>
                 <CardDescription>Change your account password.</CardDescription>
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
                 <Form {...passwordForm}>
-                  <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+                    className="space-y-6"
+                  >
                     <FormField
                       control={passwordForm.control}
                       name="password"
@@ -361,9 +448,16 @@ export default function AccountPage() {
                         <FormItem>
                           <FormLabel>New Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Enter new password" disabled={isLoading} {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Enter new password"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
-                          <FormDescription>At least 8 characters.</FormDescription>
+                          <FormDescription>
+                            At least 8 characters.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -375,14 +469,25 @@ export default function AccountPage() {
                         <FormItem>
                           <FormLabel>Confirm Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Confirm new password" disabled={isLoading} {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Confirm new password"
+                              disabled={isLoading}
+                              {...field}
+                            />
                           </FormControl>
-                          <FormDescription>Must match the new password.</FormDescription>
+                          <FormDescription>
+                            Must match the new password.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button className="w-full" type="submit" disabled={isLoading}>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      disabled={isLoading}
+                    >
                       {isLoading ? "Updating..." : "Update Password"}
                     </Button>
                   </form>

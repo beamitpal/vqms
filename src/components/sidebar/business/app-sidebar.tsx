@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   BookOpen,
@@ -22,7 +23,7 @@ export function BusinessAppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-
+  const { toggleSidebar } = useSidebar();
   const data = {
     navMain: [
       {
@@ -70,7 +71,7 @@ export function BusinessAppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="/business">
+              <Link href="/business" onClick={toggleSidebar}>
                 <Logo className="size-10" />
                 <span className="text-base font-semibold">VQMS</span>
               </Link>
@@ -87,7 +88,7 @@ export function BusinessAppSidebar({
                   isActive={isRouteActive(pathname, item.url)}
                   tooltip={item.title}
                 >
-                  <Link href={item.url}>
+                  <Link href={item.url} onClick={toggleSidebar}>
                     <item.icon />
                     <span>{item.title}</span>
                   </Link>

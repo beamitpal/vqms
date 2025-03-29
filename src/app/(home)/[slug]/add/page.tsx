@@ -4,12 +4,11 @@ import { fetchProjectCustomFields } from "@/actions/business/projects";
 import Logo from "@/components/brand/logo";
 import DynamicUserForm from "@/components/user/form";
 import { CustomFieldsType } from "@/lib/types";
+import { RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-
 
 function Page() {
   const params = useParams();
@@ -56,8 +55,8 @@ function Page() {
 
   if (!projectId || !customFields) {
     return (
-      <div className="flex justify-center items-center h-screen text-gray-500">
-        Loading...
+      <div className="h-screen flex justify-center items-center">
+        <RefreshCw className="animate-spin m-2" />
       </div>
     );
   }

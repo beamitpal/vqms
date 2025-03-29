@@ -59,7 +59,7 @@ function SignUpForm() {
       }
 
       toast.success("⚠️ Verify Your Email! Please check your inbox...");
-      router.push("/business/login"); // Redirect to login instead of /business
+      router.push("/business/login"); 
     } catch (error) {
       toast.error("Signup error");
       if (error instanceof Error) {

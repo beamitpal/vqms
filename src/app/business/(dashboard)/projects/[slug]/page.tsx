@@ -95,7 +95,7 @@ export default function ProjectPage() {
       </div>
     );
   if (error)
-    return <div className="text-center text-red-500">Error: {error}</div>;
+    return <div className="text-center">Error: {error}</div>;
   if (!project) return <div className="text-center">Project not found</div>;
 
   const customFields = project.customFields

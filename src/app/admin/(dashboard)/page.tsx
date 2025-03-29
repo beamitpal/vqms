@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,7 +8,7 @@ import StatsCard4 from "@/components/stats/stats-card-4";
 import StatsCard6 from "@/components/stats/stats-card-6";
 import StatsCard7 from "@/components/stats/stats-card-7";
 import { getAdmin } from "@/lib/auth";
-import { Admin, SystemStats, TimeSeriesData } from "@/lib/types"; 
+import { Admin, SystemStats, TimeSeriesData } from "@/lib/types";
 import {
   getSystemStats,
   getBusinessGrowth,
@@ -17,8 +16,9 @@ import {
   getUserGrowth as getSystemUserGrowth,
 } from "@/actions/admin/stats/index";
 
-import { DataPoint } from "@/lib/types"; 
+import { DataPoint } from "@/lib/types";
 import { toast } from "sonner";
+import { RefreshCw } from "lucide-react";
 
 export default function AdminDashboardPage() {
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null);
@@ -57,7 +57,11 @@ export default function AdminDashboardPage() {
   }, []);
 
   if (!systemStats || !admin) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <RefreshCw className="animate-spin m-2" />
+      </div>
+    );
   }
 
   const dateFormatter = (value: string | number | Date): string => {
@@ -102,7 +106,6 @@ export default function AdminDashboardPage() {
   return (
     <>
       <div className="chart-wrapper mx-auto flex max-w-6xl flex-col flex-wrap items-start justify-center gap-6 p-6 sm:flex-row sm:p-8">
-      
         <div className="grid w-full gap-6 sm:grid-cols-2 lg:max-w-[22rem] lg:grid-cols-1 xl:max-w-[25rem]">
           <StatsCard1
             title={systemStats.totalBusinesses}
@@ -142,7 +145,6 @@ export default function AdminDashboardPage() {
           />
         </div>
 
-     
         <div className="grid w-full flex-1 gap-6 lg:max-w-[20rem]">
           <StatsCard2
             title="Business Distribution"
@@ -199,7 +201,6 @@ export default function AdminDashboardPage() {
           />
         </div>
 
-       
         <div className="grid w-full flex-1 gap-6">
           <StatsCard3
             metrics={[

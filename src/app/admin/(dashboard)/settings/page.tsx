@@ -21,17 +21,21 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Sun, Moon, Laptop, RotateCcw } from "lucide-react";
+import {
+  ArrowLeft,
+  Sun,
+  Moon,
+  Laptop,
+  RotateCcw,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
-
 
 const modes = [
   { name: "Light", value: "light", icon: Sun },
   { name: "Dark", value: "dark", icon: Moon },
   { name: "System", value: "system", icon: Laptop },
 ];
-
 
 const radiusOptions = [
   { name: "Small", value: "0.25rem" },
@@ -43,7 +47,6 @@ const radiusOptions = [
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [accentColor, setAccentColor] = useState<string>("#1e40af");
   const [fontSize, setFontSize] = useState<number>(1);
   const [radius, setRadius] = useState<string>("0.5rem");
   const router = useRouter();
@@ -52,77 +55,56 @@ export default function SettingsPage() {
     setMounted(true);
   }, []);
 
-
   useEffect(() => {
-    if (!mounted) return; 
+    if (!mounted) return;
 
-    const savedAccentColor = localStorage.getItem("accentColor") || "#1e40af";
     const savedFontSize = parseFloat(localStorage.getItem("fontSize") || "1");
     const savedRadius = localStorage.getItem("radius") || "0.5rem";
 
-    setAccentColor(savedAccentColor);
     setFontSize(savedFontSize);
     setRadius(savedRadius);
 
-    applyCustomSettings(savedAccentColor, savedFontSize, savedRadius);
+    applyCustomSettings(savedFontSize, savedRadius);
   }, [mounted]);
 
-  const applyCustomSettings = (
-    accentColorValue: string,
-    fontSizeValue: number,
-    radiusValue: string
-  ) => {
+  const applyCustomSettings = (fontSizeValue: number, radiusValue: string) => {
     const html = document.documentElement;
-    html.style.setProperty("--primary", accentColorValue);
     html.style.setProperty("--font-size", `${fontSizeValue}rem`);
     html.style.setProperty("--radius", radiusValue);
 
-    localStorage.setItem("accentColor", accentColorValue);
     localStorage.setItem("fontSize", fontSizeValue.toString());
     localStorage.setItem("radius", radiusValue);
   };
-
 
   const handleModeChange = (value: string) => {
     setTheme(value);
     toast.success(`Mode set to ${modes.find((m) => m.value === value)?.name}`);
   };
 
-
-  const handleAccentColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value;
-    setAccentColor(newColor);
-    applyCustomSettings(newColor, fontSize, radius);
-    toast.success("Accent color updated");
-  };
-
-
   const handleFontSizeChange = (value: number[]) => {
     const newSize = value[0];
     setFontSize(newSize);
-    applyCustomSettings(accentColor, newSize, radius);
+    applyCustomSettings(newSize, radius);
     toast.success(`Font size set to ${newSize}rem`);
   };
 
- 
   const handleRadiusChange = (value: string) => {
     setRadius(value);
-    applyCustomSettings(accentColor, fontSize, value);
-    toast.success(`Radius set to ${radiusOptions.find((r) => r.value === value)?.name}`);
+    applyCustomSettings(fontSize, value);
+    toast.success(
+      `Radius set to ${radiusOptions.find((r) => r.value === value)?.name}`
+    );
   };
-
 
   const handleReset = () => {
     const defaultMode = "system";
-    const defaultAccentColor = "#1e40af";
     const defaultFontSize = 1;
     const defaultRadius = "0.5rem";
 
     setTheme(defaultMode);
-    setAccentColor(defaultAccentColor);
     setFontSize(defaultFontSize);
     setRadius(defaultRadius);
-    applyCustomSettings(defaultAccentColor, defaultFontSize, defaultRadius);
+    applyCustomSettings(defaultFontSize, defaultRadius);
     toast.success("Settings reset to defaults");
   };
 
@@ -142,13 +124,16 @@ export default function SettingsPage() {
           <h1 className="text-3xl font-bold mb-6">Settings</h1>
           <Card className="w-full max-w-2xl bg-background">
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold">Appearance</CardTitle>
-              <CardDescription>Customize the look and feel of the application.</CardDescription>
+              <CardTitle className="text-2xl font-semibold">
+                Appearance
+              </CardTitle>
+              <CardDescription>
+                Customize the look and feel of the application.
+              </CardDescription>
             </CardHeader>
             <Separator />
-            <CardContent className="pt-6 space-y-6">
-          
-              <div>Loading settings...</div>
+            <CardContent className="flex justify-center items-center pt-6 space-y-6">
+              <RefreshCw className="animate-spin m-2" />
             </CardContent>
           </Card>
         </div>
@@ -174,11 +159,12 @@ export default function SettingsPage() {
         <Card className="w-full max-w-2xl bg-background">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold">Appearance</CardTitle>
-            <CardDescription>Customize the look and feel of the application.</CardDescription>
+            <CardDescription>
+              Customize the look and feel of the application.
+            </CardDescription>
           </CardHeader>
           <Separator />
           <CardContent className="pt-6 space-y-6">
-         
             <div className="space-y-2">
               <Label className="text-base font-medium">Mode</Label>
               <div className="grid grid-cols-3 gap-4 max-w-xs">
@@ -187,12 +173,12 @@ export default function SettingsPage() {
                   return (
                     <Button
                       key={m.value}
-                      variant={theme === m.value ? "default" : "outline"}
-                      className="flex flex-col items-center gap-2 h-auto py-3"
+                      variant={theme === m.value ? "outline" : "ghost"}
+                      className="flex flex-col items-center gap-2 h-auto py-3 text-black dark:text-white"
                       onClick={() => handleModeChange(m.value)}
                     >
                       <Icon className="h-5 w-5" />
-                      <span>{m.name}</span>
+                      <span >{m.name}</span>
                     </Button>
                   );
                 })}
@@ -202,23 +188,10 @@ export default function SettingsPage() {
               </p>
             </div>
 
-            
             <div className="space-y-2">
-              <Label className="text-base font-medium">Accent Color</Label>
-              <Input
-                type="color"
-                value={accentColor}
-                onChange={handleAccentColorChange}
-                className="w-16 h-10 p-1"
-              />
-              <p className="text-sm text-muted-foreground">
-                Choose a custom accent color for the UI.
-              </p>
-            </div>
-
-          
-            <div className="space-y-2">
-              <Label className="text-base font-medium">Font Size ({fontSize}rem)</Label>
+              <Label className="text-base font-medium">
+                Font Size ({fontSize}rem)
+              </Label>
               <Slider
                 value={[fontSize]}
                 min={0.875}
@@ -232,7 +205,6 @@ export default function SettingsPage() {
               </p>
             </div>
 
-          
             <div className="space-y-2">
               <Label className="text-base font-medium">Border Radius</Label>
               <Select value={radius} onValueChange={handleRadiusChange}>
@@ -252,7 +224,6 @@ export default function SettingsPage() {
               </p>
             </div>
 
-         
             <div className="space-y-2">
               <Label className="text-base font-medium">Preview</Label>
               <div className="p-4 bg-card rounded-md border flex flex-col gap-2">
@@ -263,7 +234,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-          
             <Button variant="outline" onClick={handleReset} className="w-fit">
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset to Defaults

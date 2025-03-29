@@ -31,7 +31,7 @@ const baseStaticColumns: ColumnDef<User>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-    size: 40, // Slightly increased for visibility
+    size: 40, 
   },
 ];
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { supabase } from "@/lib/supabase"; 
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import {
   AccountDetailsFormSchema,
   AccountDetailsFormValues,
@@ -54,7 +54,6 @@ export default function AccountPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const router = useRouter();
 
-
   const accountForm = useForm<AccountDetailsFormValues>({
     resolver: zodResolver(AccountDetailsFormSchema),
     defaultValues: { email: "", fullName: "" },
@@ -74,7 +73,6 @@ export default function AccountPage() {
     resolver: zodResolver(PasswordFormSchema),
     defaultValues: { password: "", confirm: "" },
   });
-
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -101,7 +99,6 @@ export default function AccountPage() {
     fetchUser();
   }, [accountForm, newDetailsForm, router]);
 
-  
   async function onAccountSubmit(values: AccountDetailsFormValues) {
     setIsLoading(true);
     try {
@@ -119,7 +116,6 @@ export default function AccountPage() {
     }
   }
 
-
   async function onNewDetailsSubmit(values: NewDetailsFormValues) {
     setIsLoading(true);
     try {
@@ -135,7 +131,6 @@ export default function AccountPage() {
       setIsLoading(false);
     }
   }
-
 
   async function onAvatarSubmit(values: AvatarFormValues) {
     if (!values.avatar) return;
@@ -154,7 +149,6 @@ export default function AccountPage() {
         .from("avatars")
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
-
 
       const {
         data: { publicUrl },
@@ -176,7 +170,6 @@ export default function AccountPage() {
     }
   }
 
-
   async function onPasswordSubmit(values: PasswordFormValues) {
     setIsLoading(true);
     try {
@@ -194,7 +187,6 @@ export default function AccountPage() {
     }
   }
 
-
   function handleError(error: unknown) {
     if (error instanceof Error) {
       if (error.message.includes("Email rate limit exceeded")) {
@@ -209,7 +201,12 @@ export default function AccountPage() {
     }
   }
 
-  if (!user && !isLoading) return null; 
+  if (!user && !isLoading)
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <RefreshCw className="animate-spin m-2" />
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -225,9 +222,7 @@ export default function AccountPage() {
         </Button>
         <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-
           <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">
@@ -294,7 +289,6 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
- 
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">
@@ -366,9 +360,7 @@ export default function AccountPage() {
             </Card>
           </div>
 
-      
           <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-          
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">
@@ -435,7 +427,6 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
-         
             <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold">
