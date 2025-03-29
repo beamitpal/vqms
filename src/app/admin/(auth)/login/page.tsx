@@ -7,12 +7,12 @@ import { resendVerificationEmail, getAdmin } from "@/lib/auth";
 import { supabase } from "@/lib/supabase"; // Ensure this is set up
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 function AdminLoginPage() {
-  const router = useRouter();
+  // Removed unused router variable
   const [pendingResend, setPendingResend] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,21 +22,19 @@ function AdminLoginPage() {
     const checkInitialSession = async () => {
       try {
         const user = await getAdmin();
+        console.log("Initial admin session check:", { user });
         if (user) {
-          console.log("Initial admin session found:", user);
+          console.log("Admin already authenticated, redirecting...");
           toast.success("Already logged in! Redirecting...");
-          router.push("/admin");
-          router.refresh();
-        } else {
-          console.log("No initial admin session found.");
+          window.location.href = "/admin"; // Force redirect
         }
       } catch (error) {
-        console.log("Error checking initial admin session:", error);
+        console.log("No initial admin session or error:", error);
       }
     };
 
     checkInitialSession();
-  }, [router]);
+  }, []);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     try {
@@ -57,24 +55,22 @@ function AdminLoginPage() {
         throw new Error(response.error || "Login failed");
       }
 
-      // Force Supabase to refresh its auth state
+      // Check Supabase auth state after login
       const { data: userData, error: authError } = await supabase.auth.getUser();
-      if (authError) throw authError;
-      console.log("Supabase auth state after login:", userData.user);
+      console.log("Supabase auth state post-login:", { user: userData.user, authError });
+
+      if (authError) {
+        console.error("Auth state check failed:", authError);
+        throw authError;
+      }
 
       if (userData.user) {
+        console.log("Admin authenticated, redirecting...");
         toast.success("Login successful! Redirecting...");
-        router.push("/admin");
-        router.refresh();
-        // Fallback: Use window.location if router.push fails
-        setTimeout(() => {
-          if (window.location.pathname !== "/admin") {
-            console.log("Router push failed, forcing redirect.");
-            window.location.href = "/admin";
-          }
-        }, 1000); // 1-second delay to allow router.push to attempt first
+        window.location.href = "/admin"; // Force redirect
       } else {
-        throw new Error("Supabase auth state not updated after login.");
+        console.error("No user found in Supabase auth state after successful login.");
+        throw new Error("Authentication state not updated. Please try again.");
       }
     } catch (error) {
       toast.error("Login Failed");
@@ -89,7 +85,7 @@ function AdminLoginPage() {
           });
         } else {
           toast.error(error.message || "Login failed! Please try again.");
-          console.error("Login error details:", error);
+          console.error("Login error:", error);
         }
       } else {
         toast.error("An unexpected error occurred.");

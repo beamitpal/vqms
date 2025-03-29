@@ -3,40 +3,41 @@
 import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { signInWithGoogle, resendVerificationEmail, getBusiness } from "@/lib/auth";
-import { supabase } from "@/lib/supabase"; // Ensure this is set up
+import {
+  signInWithGoogle,
+  resendVerificationEmail,
+  getBusiness,
+} from "@/lib/auth";
+import { supabase } from "@/lib/supabase"; 
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 function BusinessLoginPage() {
-  const router = useRouter();
   const [pendingResend, setPendingResend] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check initial session on mount
+
   useEffect(() => {
     const checkInitialSession = async () => {
       try {
         const user = await getBusiness();
+        console.log("Initial session check:", { user });
         if (user) {
-          console.log("Initial session found:", user);
+          console.log("User already authenticated, redirecting...");
           toast.success("Already logged in! Redirecting...");
-          router.push("/business");
-          router.refresh();
-        } else {
-          console.log("No initial session found.");
+          window.location.href = "/business"; 
         }
       } catch (error) {
-        console.log("Error checking initial session:", error);
+        console.log("No initial session or error:", error);
       }
     };
 
     checkInitialSession();
-  }, [router]);
+  }, []);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     try {
@@ -57,24 +58,28 @@ function BusinessLoginPage() {
         throw new Error(response.error || "Login failed");
       }
 
-      // Force Supabase to refresh its auth state
-      const { data: userData, error: authError } = await supabase.auth.getUser();
-      if (authError) throw authError;
-      console.log("Supabase auth state after login:", userData.user);
+
+      const { data: userData, error: authError } =
+        await supabase.auth.getUser();
+      console.log("Supabase auth state post-login:", {
+        user: userData.user,
+        authError,
+      });
+
+      if (authError) {
+        console.error("Auth state check failed:", authError);
+        throw authError;
+      }
 
       if (userData.user) {
+        console.log("User authenticated, redirecting...");
         toast.success("Login successful! Redirecting...");
-        router.push("/business");
-        router.refresh();
-        // Fallback: Use window.location if router.push fails
-        setTimeout(() => {
-          if (window.location.pathname !== "/business") {
-            console.log("Router push failed, forcing redirect.");
-            window.location.href = "/business";
-          }
-        }, 1000); // 1-second delay to allow router.push to attempt first
+        window.location.href = "/business";
       } else {
-        throw new Error("Supabase auth state not updated after login.");
+        console.error(
+          "No user found in Supabase auth state after successful login."
+        );
+        throw new Error("Authentication state not updated. Please try again.");
       }
     } catch (error) {
       toast.error("Login error");
@@ -89,7 +94,7 @@ function BusinessLoginPage() {
           });
         } else {
           toast.error(error.message || "Login failed! Please try again.");
-          console.error("Login error details:", error);
+          console.error("Login error:", error);
         }
       } else {
         toast.error("An unexpected error occurred.");
@@ -119,26 +124,35 @@ function BusinessLoginPage() {
   const onGoogle = async () => {
     try {
       setIsLoading(true);
+      console.log("Attempting Google login...");
       await signInWithGoogle("business");
-      const { data: userData, error: authError } = await supabase.auth.getUser();
-      if (authError) throw authError;
-      console.log("Supabase auth state after Google login:", userData.user);
+
+      const { data: userData, error: authError } =
+        await supabase.auth.getUser();
+      console.log("Supabase auth state post-Google login:", {
+        user: userData.user,
+        authError,
+      });
+
+      if (authError) {
+        console.error("Google auth state check failed:", authError);
+        throw authError;
+      }
 
       if (userData.user) {
+        console.log("Google login successful, redirecting...");
         toast.success("Google login successful! Redirecting...");
-        router.push("/business");
-        router.refresh();
-        setTimeout(() => {
-          if (window.location.pathname !== "/business") {
-            console.log("Router push failed for Google, forcing redirect.");
-            window.location.href = "/business";
-          }
-        }, 1000);
+        window.location.href = "/business"; 
       } else {
-        throw new Error("Supabase auth state not updated after Google login.");
+        console.error(
+          "No user found in Supabase auth state after Google login."
+        );
+        throw new Error("Google authentication state not updated.");
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to login.");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to login with Google."
+      );
       console.error("Google login error:", error);
     } finally {
       setIsLoading(false);
