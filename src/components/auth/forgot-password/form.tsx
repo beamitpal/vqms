@@ -47,7 +47,7 @@ function ForgotPasswordForm({ back }: ForgotFormProps) {
     try {
       await resetPasswordForEmail(values.email, role);
       toast.success("✅ Password reset email sent! Check your inbox.");
-      form.reset(); // Clear the form after success
+      form.reset(); 
     } catch (error) {
       toast.error("Forgot password error");
       if (error instanceof Error) {

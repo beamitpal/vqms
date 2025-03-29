@@ -3,11 +3,11 @@
 import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { resendVerificationEmail } from "@/lib/auth";
+import { resendVerificationEmail, getAdmin } from "@/lib/auth";
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 function AdminLoginPage() {
@@ -15,6 +15,27 @@ function AdminLoginPage() {
   const [pendingResend, setPendingResend] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  useEffect(() => {
+    const checkAdminSession = async () => {
+      try {
+        const user = await getAdmin();
+        if (user) {
+          toast.success("Already logged in! Redirecting...");
+          setTimeout(() => {
+            router.push("/admin");
+            router.refresh();
+          }, 500);
+        }
+      } catch (error) {
+        console.log("No active admin session found:", error);
+
+      }
+    };
+
+    checkAdminSession();
+  }, [router]);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     try {
@@ -34,8 +55,10 @@ function AdminLoginPage() {
       }
 
       toast.success("Login successful! Redirecting...");
-      router.push("/admin");
-      router.refresh();
+      setTimeout(() => {
+        router.push("/admin");
+        router.refresh();
+      }, 500);
     } catch (error) {
       toast.error("Login Failed");
       if (error instanceof Error) {

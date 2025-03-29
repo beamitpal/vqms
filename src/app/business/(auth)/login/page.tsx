@@ -3,11 +3,11 @@
 import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { signInWithGoogle, resendVerificationEmail } from "@/lib/auth";
+import { signInWithGoogle, resendVerificationEmail, getBusiness } from "@/lib/auth";
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 function BusinessLoginPage() {
@@ -15,6 +15,26 @@ function BusinessLoginPage() {
   const [pendingResend, setPendingResend] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const user = await getBusiness();
+        if (user) {
+          toast.success("Already logged in! Redirecting...");
+          setTimeout(() => {
+            router.push("/business");
+            router.refresh();
+          }, 500);
+        }
+      } catch (error) {
+        console.log("No active session found:", error);
+      }
+    };
+
+    checkUserSession();
+  }, [router]);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     try {
@@ -35,8 +55,11 @@ function BusinessLoginPage() {
       }
 
       toast.success("Login successful! Redirecting...");
-      router.push("/business");
-      router.refresh();
+
+      setTimeout(() => {
+        router.push("/business");
+        router.refresh();
+      }, 500);
     } catch (error) {
       toast.error("Login error");
       if (error instanceof Error) {
@@ -79,6 +102,11 @@ function BusinessLoginPage() {
     try {
       setIsLoading(true);
       await signInWithGoogle("business");
+      toast.success("Google login successful! Redirecting...");
+      setTimeout(() => {
+        router.push("/business");
+        router.refresh();
+      }, 500);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to login.");
     } finally {
