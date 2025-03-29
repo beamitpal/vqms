@@ -50,16 +50,6 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Virtual Queue Management System | VQMS",
-    description:
-      "Manage queues efficiently with VQMS—real-time updates, remote check-in, and more for businesses.",
-    creator: "@beamitpal", 
-    images: ["https://vqms.beamitpal.com/twitter-image.jpg"], 
-  },
   robots: {
     index: true,
     follow: true,
@@ -76,8 +66,8 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
   viewport: "width=device-width, initial-scale=1",
 };
