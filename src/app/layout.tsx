@@ -28,20 +28,19 @@ export const metadata: Metadata = {
     "real-time updates",
     "remote check-in",
   ],
-  authors: [{ name: "Amit", url: "https://beamitpal.com" }], 
+  authors: [{ name: "Amit", url: "https://beamitpal.com" }],
   creator: "Amit",
   publisher: "IGNOU BCA Project",
-
 
   openGraph: {
     title: "Virtual Queue Management System | VQMS",
     description:
       "Streamline your business with VQMS, a virtual queue management system offering real-time updates and remote check-in for improved customer satisfaction.",
-    url: "https://vqms.beamitpal.com", 
+    url: "https://vqms.beamitpal.com",
     siteName: "VQMS",
     images: [
       {
-        url: "https://vqms.beamitpal.com/og-image.jpg", 
+        url: "https://vqms.beamitpal.com/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "VQMS - Virtual Queue Management System",
@@ -62,7 +61,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://vqms.beamitpal.com", 
+    canonical: "https://vqms.beamitpal.com",
   },
   icons: {
     icon: "/favicon.ico",
@@ -77,6 +76,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (typeof window !== "undefined") {
+    import("../mocks/browser").then(({ worker }) => worker.start());
+  }
   return (
     <html lang="en" suppressHydrationWarning>
       <body

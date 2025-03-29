@@ -359,7 +359,7 @@ export interface SystemStats {
 }
 
 export type EnvSchemaType = {
-  NEXT_PUBLIC_WEB_3_FORM:string;
+
   NEXT_PUBLIC_APP_URL: string;
 };
 
