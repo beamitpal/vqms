@@ -4,7 +4,7 @@ import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { resendVerificationEmail, getAdmin } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // Ensure this is set up
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,40 +17,25 @@ function AdminLoginPage() {
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-
+  // Check initial session on mount
   useEffect(() => {
-    const checkAndRedirect = async () => {
+    const checkInitialSession = async () => {
       try {
         const user = await getAdmin();
         if (user) {
-          console.log("Admin already logged in:", user);
+          console.log("Initial admin session found:", user);
           toast.success("Already logged in! Redirecting...");
           router.push("/admin");
           router.refresh();
+        } else {
+          console.log("No initial admin session found.");
         }
       } catch (error) {
-        console.log("No active admin session on mount:", error);
+        console.log("Error checking initial admin session:", error);
       }
     };
 
-    checkAndRedirect();
-
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event: string, session: { user: { id: string } } | null) => {
-        console.log("Auth state changed:", event, session);
-        if (event === "SIGNED_IN" && session?.user) {
-          toast.success("Login successful! Redirecting...");
-          router.push("/admin");
-          router.refresh();
-        }
-      }
-    );
-
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    checkInitialSession();
   }, [router]);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
@@ -72,8 +57,25 @@ function AdminLoginPage() {
         throw new Error(response.error || "Login failed");
       }
 
-      // Toast is shown, but redirect will be handled by auth state change
-      toast.success("Login successful! Redirecting...");
+      // Force Supabase to refresh its auth state
+      const { data: userData, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      console.log("Supabase auth state after login:", userData.user);
+
+      if (userData.user) {
+        toast.success("Login successful! Redirecting...");
+        router.push("/admin");
+        router.refresh();
+        // Fallback: Use window.location if router.push fails
+        setTimeout(() => {
+          if (window.location.pathname !== "/admin") {
+            console.log("Router push failed, forcing redirect.");
+            window.location.href = "/admin";
+          }
+        }, 1000); // 1-second delay to allow router.push to attempt first
+      } else {
+        throw new Error("Supabase auth state not updated after login.");
+      }
     } catch (error) {
       toast.error("Login Failed");
       if (error instanceof Error) {
@@ -87,9 +89,11 @@ function AdminLoginPage() {
           });
         } else {
           toast.error(error.message || "Login failed! Please try again.");
+          console.error("Login error details:", error);
         }
       } else {
         toast.error("An unexpected error occurred.");
+        console.error("Unexpected error:", error);
       }
     } finally {
       setIsLoading(false);
