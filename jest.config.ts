@@ -12,6 +12,7 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testMatch: ['<rootDir>/tests/**/*.(test|spec).ts?(x)'],
+  preset: 'ts-jest',
 };
 
 module.exports = createJestConfig(customJestConfig);

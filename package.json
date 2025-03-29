@@ -7,6 +7,8 @@
     "build": "npx dotenv -e .env.local -- prisma generate && next build",
     "start": "next start",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "next lint",
     "migrate:dev": "npx dotenv -e .env.local -- prisma migrate dev",
     "db:push": "npx dotenv -e .env.local -- prisma db push",
@@ -68,6 +70,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/react-hooks": "^8.0.1",
