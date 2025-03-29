@@ -4,6 +4,7 @@ import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { resendVerificationEmail, getAdmin } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,28 +19,44 @@ function AdminLoginPage() {
 
 
   useEffect(() => {
-    const checkAdminSession = async () => {
+    const checkAndRedirect = async () => {
       try {
         const user = await getAdmin();
         if (user) {
+          console.log("Admin already logged in:", user);
           toast.success("Already logged in! Redirecting...");
-          setTimeout(() => {
-            router.push("/admin");
-            router.refresh();
-          }, 500);
+          router.push("/admin");
+          router.refresh();
         }
       } catch (error) {
-        console.log("No active admin session found:", error);
-
+        console.log("No active admin session on mount:", error);
       }
     };
 
-    checkAdminSession();
+    checkAndRedirect();
+
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event: string, session: { user: { id: string } } | null) => {
+        console.log("Auth state changed:", event, session);
+        if (event === "SIGNED_IN" && session?.user) {
+          toast.success("Login successful! Redirecting...");
+          router.push("/admin");
+          router.refresh();
+        }
+      }
+    );
+
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [router]);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
+      console.log("Attempting admin login with:", values);
 
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -49,16 +66,14 @@ function AdminLoginPage() {
       });
 
       const response = await res.json();
+      console.log("Login API response:", response);
 
       if (!res.ok) {
         throw new Error(response.error || "Login failed");
       }
 
+      // Toast is shown, but redirect will be handled by auth state change
       toast.success("Login successful! Redirecting...");
-      setTimeout(() => {
-        router.push("/admin");
-        router.refresh();
-      }, 500);
     } catch (error) {
       toast.error("Login Failed");
       if (error instanceof Error) {

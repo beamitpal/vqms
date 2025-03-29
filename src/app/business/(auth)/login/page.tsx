@@ -4,6 +4,7 @@ import LoginForm from "@/components/auth/login/form";
 import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle, resendVerificationEmail, getBusiness } from "@/lib/auth";
+import { supabase } from "@/lib/supabase"; 
 import { LoginFormValues } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,24 +17,36 @@ function BusinessLoginPage() {
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-
   useEffect(() => {
-    const checkUserSession = async () => {
+    const checkAndRedirect = async () => {
       try {
         const user = await getBusiness();
         if (user) {
+          console.log("User already logged in:", user);
           toast.success("Already logged in! Redirecting...");
-          setTimeout(() => {
-            router.push("/business");
-            router.refresh();
-          }, 500);
+          router.push("/business");
+          router.refresh();
         }
       } catch (error) {
-        console.log("No active session found:", error);
+        console.log("No active session on mount:", error);
       }
     };
 
-    checkUserSession();
+    checkAndRedirect();
+
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event: string, session: { user: { id: string; email: string } } | null) => {
+      console.log("Auth state changed:", event, session);
+      if (event === "SIGNED_IN" && session?.user) {
+        toast.success("Login successful! Redirecting...");
+        router.push("/business");
+        router.refresh();
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [router]);
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
@@ -49,17 +62,13 @@ function BusinessLoginPage() {
       });
 
       const response = await res.json();
+      console.log("Login API response:", response);
 
       if (!res.ok) {
         throw new Error(response.error || "Login failed");
       }
 
       toast.success("Login successful! Redirecting...");
-
-      setTimeout(() => {
-        router.push("/business");
-        router.refresh();
-      }, 500);
     } catch (error) {
       toast.error("Login error");
       if (error instanceof Error) {
@@ -103,10 +112,6 @@ function BusinessLoginPage() {
       setIsLoading(true);
       await signInWithGoogle("business");
       toast.success("Google login successful! Redirecting...");
-      setTimeout(() => {
-        router.push("/business");
-        router.refresh();
-      }, 500);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to login.");
     } finally {
