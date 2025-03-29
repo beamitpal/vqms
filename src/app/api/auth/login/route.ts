@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { toast } from "sonner";
+
 
 export async function POST(request: Request) {
   const cookieStore = await cookies(); // Synchronous, no await
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    toast.error("Login API error:");
+    console.error("Login API error:");
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Login failed" },
       { status: 401 }

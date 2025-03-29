@@ -5,7 +5,7 @@ import React from "react";
 
 function FooterHome() {
   return (
-    <footer className="bg-background  py-4 ">
+    <footer className="bg-background w-full mt-3">
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         <div className="flex items-center space-x-3 mb-4 md:mb-0">
           <Logo className="h-8 w-8" />

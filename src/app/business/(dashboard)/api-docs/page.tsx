@@ -29,15 +29,24 @@ export default function ApiDocsPage() {
       name: "List All Projects",
       method: "GET",
       path: "/api/projects/list",
-      description: "Retrieve a list of all projects for a given business using an API key.",
+      description:
+        "Retrieve a list of all projects for a given business using an API key and business ID.",
       params: [
-        { name: "businessId", type: "string", description: "The ID of the business (query parameter)" },
+        {
+          name: "businessId",
+          type: "string",
+          description: "The ID of the business (query parameter)",
+        },
       ],
       headers: [
-        { name: "Authorization", value: "Bearer <apiKey>", description: "A valid project API key for the business" },
+        {
+          name: "Authorization",
+          value: "Bearer <apiKey>",
+          description: "A valid project API key for the business",
+        },
       ],
       body: null,
-      response: `{ "success": true, "projects": [{ "id": "...", "name": "...", "description": "...", "username": "...", "status": "PRIVATE", "apiKey": "...", "customFields": {}, "createdAt": "...", "businessId": "..." }] }`,
+      response: `{ "success": true, "projects": [{ "id": "...", "name": "...", "description": "...", "username": "...", "status": "...", "apiKey": "...", "customFields": {}, "createdAt": "...", "businessId": "..." }] }`,
       examples: {
         javascript: `fetch('/api/projects/list?businessId=<businessId>', {
   method: 'GET',
@@ -58,16 +67,20 @@ print(response.json())`,
     {
       name: "Get Project",
       method: "GET",
-      path: "/api/projects/[projectId]",
+      path: "/api/projects/getproject",
       description: "Retrieve a specific project using its API key.",
       params: [],
       headers: [
-        { name: "Authorization", value: "Bearer <apiKey>", description: "The project's API key" },
+        {
+          name: "Authorization",
+          value: "Bearer <apiKey>",
+          description: "The project's API key",
+        },
       ],
       body: null,
-      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "PRIVATE", "apiKey": "...", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
+      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "...", "apiKey": "...", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
       examples: {
-        javascript: `fetch('/api/projects/[projectId]', {
+        javascript: `fetch('/api/projects/getproject', {
   method: 'GET',
   headers: { 'Authorization': 'Bearer <apiKey>' }
 })
@@ -75,22 +88,29 @@ print(response.json())`,
   .then(data => console.log(data));`,
         python: `import requests
 
-response = requests.get('http://localhost:3000/api/projects/[projectId]', 
+response = requests.get('http://localhost:3000/api/projects/getproject', 
   headers={'Authorization': 'Bearer <apiKey>'}
 )
 print(response.json())`,
-        curl: `curl -X GET "http://localhost:3000/api/projects/[projectId]" -H "Authorization: Bearer <apiKey>"`,
+        curl: `curl -X GET "http://localhost:3000/api/projects/getproject" -H "Authorization: Bearer <apiKey>"`,
       },
     },
     {
       name: "Create a Project",
       method: "POST",
       path: "/api/projects/create",
-      description: "Create a new project for a business. An API key will be generated.",
+      description:
+        "Create a new project for a business. An API key will be generated automatically.",
       params: [],
-      headers: [],
-      body: `{ "businessId": "<businessId>", "businessEmail": "<email>", "data": { "name": "<name>", "username": "<username>", "description": "<description>", "status": "PRIVATE" } }`,
-      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "PRIVATE", "apiKey": "...", "customFields": null, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
+      headers: [
+        {
+          name: "Content-Type",
+          value: "application/json",
+          description: "Specifies JSON request body",
+        },
+      ],
+      body: `{ "businessId": "<businessId>", "businessEmail": "<email>", "data": { "name": "<name>", "username": "<username>", "description": "<description>", "status": "PRIVATE", "customFields": {} } }`,
+      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "...", "apiKey": "...", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
       examples: {
         javascript: `fetch('/api/projects/create', {
   method: 'POST',
@@ -98,7 +118,7 @@ print(response.json())`,
   body: JSON.stringify({
     businessId: '<businessId>',
     businessEmail: '<email>',
-    data: { name: '<name>', username: '<username>', description: '<description>', status: 'PRIVATE' }
+    data: { name: '<name>', username: '<username>', description: '<description>', status: 'PRIVATE', customFields: {} }
   })
 })
   .then(response => response.json())
@@ -109,26 +129,30 @@ response = requests.post('http://localhost:3000/api/projects/create',
   json={
     'businessId': '<businessId>',
     'businessEmail': '<email>',
-    'data': {'name': '<name>', 'username': '<username>', 'description': '<description>', 'status': 'PRIVATE'}
+    'data': {'name': '<name>', 'username': '<username>', 'description': '<description>', 'status': 'PRIVATE', 'customFields': {}}
   }
 )
 print(response.json())`,
-        curl: `curl -X POST "http://localhost:3000/api/projects/create" -H "Content-Type: application/json" -d '{"businessId": "<businessId>", "businessEmail": "<email>", "data": {"name": "<name>", "username": "<username>", "description": "<description>", "status": "PRIVATE"}}'`,
+        curl: `curl -X POST "http://localhost:3000/api/projects/create" -H "Content-Type: application/json" -d '{"businessId": "<businessId>", "businessEmail": "<email>", "data": {"name": "<name>", "username": "<username>", "description": "<description>", "status": "PRIVATE", "customFields": {}}}'`,
       },
     },
     {
       name: "Delete a Project",
       method: "DELETE",
-      path: "/api/projects/[projectId]",
+      path: "/api/projects/getproject",
       description: "Delete a project using its API key.",
       params: [],
       headers: [
-        { name: "Authorization", value: "Bearer <apiKey>", description: "The project's API key" },
+        {
+          name: "Authorization",
+          value: "Bearer <apiKey>",
+          description: "The project's API key",
+        },
       ],
       body: null,
-      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "PRIVATE", "apiKey": "...", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
+      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "...", "apiKey": "...", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
       examples: {
-        javascript: `fetch('/api/projects/[projectId]', {
+        javascript: `fetch('/api/projects/getproject', {
   method: 'DELETE',
   headers: { 'Authorization': 'Bearer <apiKey>' }
 })
@@ -136,26 +160,35 @@ print(response.json())`,
   .then(data => console.log(data));`,
         python: `import requests
 
-response = requests.delete('http://localhost:3000/api/projects/[projectId]', 
+response = requests.delete('http://localhost:3000/api/projects/getproject', 
   headers={'Authorization': 'Bearer <apiKey>'}
 )
 print(response.json())`,
-        curl: `curl -X DELETE "http://localhost:3000/api/projects/[projectId]" -H "Authorization: Bearer <apiKey>"`,
+        curl: `curl -X DELETE "http://localhost:3000/api/projects/getproject" -H "Authorization: Bearer <apiKey>"`,
       },
     },
     {
       name: "Update a Project",
       method: "PATCH",
-      path: "/api/projects/[projectId]/update",
+      path: "/api/projects/update",
       description: "Update project details using its API key.",
       params: [],
       headers: [
-        { name: "Authorization", value: "Bearer <apiKey>", description: "The project's API key" },
+        {
+          name: "Authorization",
+          value: "Bearer <apiKey>",
+          description: "The project's API key",
+        },
+        {
+          name: "Content-Type",
+          value: "application/json",
+          description: "Specifies JSON request body",
+        },
       ],
       body: `{ "name": "<newName>", "description": "<newDescription>", "status": "PUBLIC", "customFields": { "field1": { "type": "text", "defaultValue": "value" } } }`,
       response: `{ "success": true, "project": { "id": "...", "name": "<newName>", "description": "<newDescription>", "username": "...", "status": "PUBLIC", "apiKey": "...", "customFields": {...}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
       examples: {
-        javascript: `fetch('/api/projects/[projectId]/update', {
+        javascript: `fetch('/api/projects/update', {
   method: 'PATCH',
   headers: {
     'Content-Type': 'application/json',
@@ -172,7 +205,7 @@ print(response.json())`,
   .then(data => console.log(data));`,
         python: `import requests
 
-response = requests.patch('http://localhost:3000/api/projects/[projectId]/update', 
+response = requests.patch('http://localhost:3000/api/projects/update', 
   headers={'Authorization': 'Bearer <apiKey>', 'Content-Type': 'application/json'},
   json={
     'name': '<newName>',
@@ -182,22 +215,27 @@ response = requests.patch('http://localhost:3000/api/projects/[projectId]/update
   }
 )
 print(response.json())`,
-        curl: `curl -X PATCH "http://localhost:3000/api/projects/[projectId]/update" -H "Authorization: Bearer <apiKey>" -H "Content-Type: application/json" -d '{"name": "<newName>", "description": "<newDescription>", "status": "PUBLIC", "customFields": {"field1": {"type": "text", "defaultValue": "value"}}}'`,
+        curl: `curl -X PATCH "http://localhost:3000/api/projects/update" -H "Authorization: Bearer <apiKey>" -H "Content-Type: application/json" -d '{"name": "<newName>", "description": "<newDescription>", "status": "PUBLIC", "customFields": {"field1": {"type": "text", "defaultValue": "value"}}}'`,
       },
     },
     {
       name: "Regenerate API Key",
       method: "POST",
-      path: "/api/projects/[projectId]/regenerate-api-key",
-      description: "Regenerate the API key for a project using its current API key.",
+      path: "/api/projects/regenerate-api-key",
+      description:
+        "Regenerate the API key for a project using its current API key.",
       params: [],
       headers: [
-        { name: "Authorization", value: "Bearer <apiKey>", description: "The current project API key" },
+        {
+          name: "Authorization",
+          value: "Bearer <apiKey>",
+          description: "The current project API key",
+        },
       ],
       body: null,
-      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "PRIVATE", "apiKey": "<newApiKey>", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
+      response: `{ "success": true, "project": { "id": "...", "name": "...", "description": "...", "username": "...", "status": "...", "apiKey": "<newApiKey>", "customFields": {}, "createdAt": "...", "updatedAt": "...", "businessId": "...", "users": [] } }`,
       examples: {
-        javascript: `fetch('/api/projects/[projectId]/regenerate-api-key', {
+        javascript: `fetch('/api/projects/regenerate-api-key', {
   method: 'POST',
   headers: { 'Authorization': 'Bearer <apiKey>' }
 })
@@ -205,11 +243,11 @@ print(response.json())`,
   .then(data => console.log(data));`,
         python: `import requests
 
-response = requests.post('http://localhost:3000/api/projects/[projectId]/regenerate-api-key', 
+response = requests.post('http://localhost:3000/api/projects/regenerate-api-key', 
   headers={'Authorization': 'Bearer <apiKey>'}
 )
 print(response.json())`,
-        curl: `curl -X POST "http://localhost:3000/api/projects/[projectId]/regenerate-api-key" -H "Authorization: Bearer <apiKey>"`,
+        curl: `curl -X POST "http://localhost:3000/api/projects/regenerate-api-key" -H "Authorization: Bearer <apiKey>"`,
       },
     },
   ];
@@ -217,9 +255,12 @@ print(response.json())`,
   return (
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4 sm:text-4xl lg:text-5xl">API Documentation</h1>
+        <h1 className="text-3xl font-bold mb-4 sm:text-4xl lg:text-5xl">
+          API Documentation
+        </h1>
         <p className="text-base text-muted-foreground mb-8 max-w-2xl">
-          Explore the API endpoints below to manage projects within a business using API keys.
+          Explore the API endpoints below to manage projects within a business
+          using API keys.
         </p>
         <Tabs defaultValue={endpoints[0].name} className="space-y-6">
           <ScrollArea className="w-full">
@@ -240,7 +281,9 @@ print(response.json())`,
             <TabsContent key={endpoint.name} value={endpoint.name}>
               <Card className="bg-background shadow-lg">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-semibold sm:text-2xl">{endpoint.name}</CardTitle>
+                  <CardTitle className="text-xl font-semibold sm:text-2xl">
+                    {endpoint.name}
+                  </CardTitle>
                   <CardDescription className="text-sm text-muted-foreground">
                     {endpoint.description}
                   </CardDescription>
@@ -249,7 +292,9 @@ print(response.json())`,
                   <div>
                     <h3 className="text-lg font-semibold mb-2">Endpoint</h3>
                     <p className="text-sm text-muted-foreground">
-                      <span className="font-mono bg-muted py-1 px-2 rounded">{endpoint.method}</span>{" "}
+                      <span className="font-mono bg-muted py-1 px-2 rounded">
+                        {endpoint.method}
+                      </span>{" "}
                       {endpoint.path}
                     </p>
                   </div>
@@ -260,8 +305,10 @@ print(response.json())`,
                       <ul className="list-disc pl-6 text-sm space-y-2 text-muted-foreground">
                         {endpoint.params.map((param) => (
                           <li key={param.name}>
-                            <span className="font-mono text-foreground">{param.name}</span> ({param.type}):{" "}
-                            {param.description}
+                            <span className="font-mono text-foreground">
+                              {param.name}
+                            </span>{" "}
+                            ({param.type}): {param.description}
                           </li>
                         ))}
                       </ul>
@@ -274,8 +321,10 @@ print(response.json())`,
                       <ul className="list-disc pl-6 text-sm space-y-2 text-muted-foreground">
                         {endpoint.headers.map((header) => (
                           <li key={header.name}>
-                            <span className="font-mono text-foreground">{header.name}</span>: {header.value} -{" "}
-                            {header.description}
+                            <span className="font-mono text-foreground">
+                              {header.name}
+                            </span>
+                            : {header.value} - {header.description}
                           </li>
                         ))}
                       </ul>
@@ -284,7 +333,9 @@ print(response.json())`,
 
                   {endpoint.body && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Request Body</h3>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Request Body
+                      </h3>
                       <ScrollArea className="overflow-x-auto">
                         <SyntaxHighlighter
                           language="json"
@@ -318,9 +369,18 @@ print(response.json())`,
                     <h3 className="text-lg font-semibold mb-3">Examples</h3>
                     <Tabs defaultValue="javascript" className="space-y-4">
                       <TabsList className="grid grid-cols-3 gap-2 w-full max-w-md">
-                        <TabsTrigger value="javascript" className="py-2 text-sm">JavaScript</TabsTrigger>
-                        <TabsTrigger value="python" className="py-2 text-sm">Python</TabsTrigger>
-                        <TabsTrigger value="curl" className="py-2 text-sm">cURL</TabsTrigger>
+                        <TabsTrigger
+                          value="javascript"
+                          className="py-2 text-sm"
+                        >
+                          JavaScript
+                        </TabsTrigger>
+                        <TabsTrigger value="python" className="py-2 text-sm">
+                          Python
+                        </TabsTrigger>
+                        <TabsTrigger value="curl" className="py-2 text-sm">
+                          cURL
+                        </TabsTrigger>
                       </TabsList>
                       <TabsContent value="javascript" className="bg-background">
                         <div className="relative">
@@ -339,10 +399,17 @@ print(response.json())`,
                             variant="outline"
                             size="sm"
                             className="absolute top-2 right-2"
-                            onClick={() => copyToClipboard(endpoint.examples.javascript, `${endpoint.name}-js`)}
+                            onClick={() =>
+                              copyToClipboard(
+                                endpoint.examples.javascript,
+                                `${endpoint.name}-js`
+                              )
+                            }
                           >
                             <CopyIcon className="h-4 w-4" />
-                            {copied === `${endpoint.name}-js` ? " Copied!" : " Copy"}
+                            {copied === `${endpoint.name}-js`
+                              ? " Copied!"
+                              : " Copy"}
                           </Button>
                         </div>
                       </TabsContent>
@@ -363,10 +430,17 @@ print(response.json())`,
                             variant="outline"
                             size="sm"
                             className="absolute top-2 right-2"
-                            onClick={() => copyToClipboard(endpoint.examples.python, `${endpoint.name}-py`)}
+                            onClick={() =>
+                              copyToClipboard(
+                                endpoint.examples.python,
+                                `${endpoint.name}-py`
+                              )
+                            }
                           >
                             <CopyIcon className="h-4 w-4" />
-                            {copied === `${endpoint.name}-py` ? " Copied!" : " Copy"}
+                            {copied === `${endpoint.name}-py`
+                              ? " Copied!"
+                              : " Copy"}
                           </Button>
                         </div>
                       </TabsContent>
@@ -387,10 +461,17 @@ print(response.json())`,
                             variant="outline"
                             size="sm"
                             className="absolute top-2 right-2"
-                            onClick={() => copyToClipboard(endpoint.examples.curl, `${endpoint.name}-curl`)}
+                            onClick={() =>
+                              copyToClipboard(
+                                endpoint.examples.curl,
+                                `${endpoint.name}-curl`
+                              )
+                            }
                           >
                             <CopyIcon className="h-4 w-4" />
-                            {copied === `${endpoint.name}-curl` ? " Copied!" : " Copy"}
+                            {copied === `${endpoint.name}-curl`
+                              ? " Copied!"
+                              : " Copy"}
                           </Button>
                         </div>
                       </TabsContent>
