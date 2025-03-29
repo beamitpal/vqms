@@ -358,10 +358,6 @@ export interface SystemStats {
   avgUsersPerBusiness: number;
 }
 
-export type EnvSchemaType = {
-
-  NEXT_PUBLIC_APP_URL: string;
-};
 
 
 export type LoginFormProps = {

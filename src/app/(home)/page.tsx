@@ -2,11 +2,35 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getBusiness } from "@/lib/auth";
 import { motion } from "framer-motion";
 import { FileSymlink, UsersRound } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
+  useEffect(() => {
+    const checkInitialSession = async () => {
+      try {
+        const user = await getBusiness();
+        console.log("Initial session check:", { user });
+        if (user.user_metadata.role === "business") {
+          console.log("User already authenticated, redirecting...");
+          toast.success("Already logged in! Redirecting...");
+          window.location.href = "/business";
+        } else {
+          console.log("User already authenticated, redirecting...");
+          toast.success("Already logged in! Redirecting...");
+          window.location.href = "/admin";
+        }
+      } catch (error) {
+        console.log("No initial session or error:", error);
+      }
+    };
+
+    checkInitialSession();
+  }, []);
   return (
     <div className="container mx-auto px-4 py-12">
       <motion.div
@@ -19,10 +43,16 @@ export default function Home() {
           Welcome to Virtual Queue Management System
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Say goodbye to long, frustrating queues and hello to a seamless, digital solution designed to enhance customer experiences and streamline business operations. Our Virtual Queue Management System (VQMS) empowers small businesses to manage customer flow efficiently, ensuring satisfaction and operational excellence.
+          Say goodbye to long, frustrating queues and hello to a seamless,
+          digital solution designed to enhance customer experiences and
+          streamline business operations. Our Virtual Queue Management System
+          (VQMS) empowers small businesses to manage customer flow efficiently,
+          ensuring satisfaction and operational excellence.
         </p>
         <Button size="lg" asChild>
-          <Link href="/book"><UsersRound /> Join a Queue Now</Link>
+          <Link href="/book">
+            <UsersRound /> Join a Queue Now
+          </Link>
         </Button>
       </motion.div>
 
@@ -38,7 +68,10 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Stay informed every step of the way with instant notifications about your queue position, estimated wait times, and upcoming service alerts. Whether you’re at home or on the go, our system keeps you updated in real time, ensuring you never miss your turn.
+              Stay informed every step of the way with instant notifications
+              about your queue position, estimated wait times, and upcoming
+              service alerts. Whether you’re at home or on the go, our system
+              keeps you updated in real time, ensuring you never miss your turn.
             </p>
           </CardContent>
         </Card>
@@ -48,7 +81,10 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              No need to wait in crowded spaces. With our remote check-in feature, you can join a queue from anywhere—be it your car, home, or office—and arrive just in time for your service. It’s convenience redefined for the modern customer.
+              No need to wait in crowded spaces. With our remote check-in
+              feature, you can join a queue from anywhere—be it your car, home,
+              or office—and arrive just in time for your service. It’s
+              convenience redefined for the modern customer.
             </p>
           </CardContent>
         </Card>
@@ -58,7 +94,10 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Empower your business with actionable data. Our system provides detailed reports and analytics on customer trends, peak hours, and operational efficiency, helping you optimize staffing, reduce wait times, and elevate customer satisfaction.
+              Empower your business with actionable data. Our system provides
+              detailed reports and analytics on customer trends, peak hours, and
+              operational efficiency, helping you optimize staffing, reduce wait
+              times, and elevate customer satisfaction.
             </p>
           </CardContent>
         </Card>
@@ -72,10 +111,17 @@ export default function Home() {
       >
         <h2 className="text-3xl font-semibold mb-6">Why Choose VQMS?</h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-          Built with cutting-edge technologies like Next.js, PostgreSQL, VQMS offers a robust, scalable, and user-friendly platform. Whether you’re a small café, clinic, or retail store, our system adapts to your needs, reducing congestion and enhancing service delivery. Join the future of queue management today!
+          Built with cutting-edge technologies like Next.js, PostgreSQL, VQMS
+          offers a robust, scalable, and user-friendly platform. Whether you’re
+          a small café, clinic, or retail store, our system adapts to your
+          needs, reducing congestion and enhancing service delivery. Join the
+          future of queue management today!
         </p>
-        <Button  variant="outline" size="lg" asChild>
-          <Link href="/about"> <FileSymlink /> Learn More About Us</Link>
+        <Button variant="outline" size="lg" asChild>
+          <Link href="/about">
+            {" "}
+            <FileSymlink /> Learn More About Us
+          </Link>
         </Button>
       </motion.div>
     </div>
