@@ -9,11 +9,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  BookOpen,
-  FolderOpenDot,
-  LayoutDashboard,
-  Settings2,
-  Users,
+  Book,
+  Contact,
+  PersonStanding,
+  Phone,
+  TerminalIcon,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -25,31 +25,15 @@ export function HomeAppSidebar({
   const { toggleSidebar } = useSidebar();
   const data = {
     navMain: [
+      { title: "Join Queue", url: "/book", label: "Join Queue", icon: Book },
+      { title: "Contact", url: "/contact", label: "Contact", icon: Contact },
+      { title: "About", url: "/about", label: "About", icon: PersonStanding },
+      { title: "Privacy", url: "/privacy", label: "Privacy", icon: Phone },
       {
-        title: "Dashboard",
-        url: "/business",
-        icon: LayoutDashboard,
-      },
-      {
-        title: "Projects",
-        url: "/business/projects",
-        icon: FolderOpenDot,
-      },
-      {
-        title: "Queue Manage",
-        url: "/business/queue-manage",
-        icon: Users,
-      },
-
-      {
-        title: "API Documentation",
-        url: "/business/api-docs",
-        icon: BookOpen,
-      },
-      {
-        title: "Settings",
-        url: "/business/settings",
-        icon: Settings2,
+        title: " Terms & Conditions",
+        url: "/terms",
+        label: "Terms & Conditions",
+        icon: TerminalIcon,
       },
     ],
   };
@@ -58,7 +42,7 @@ export function HomeAppSidebar({
     if (!pathname || !url) return false;
 
     if (url === "/business") return pathname === url;
-   
+
     return pathname.startsWith(url);
   };
   return (
@@ -75,21 +59,21 @@ export function HomeAppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
-            {data.navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isRouteActive(pathname, item.url)}
-                  tooltip={item.title}
-                >
-                  <Link href={item.url} onClick={toggleSidebar}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          {data.navMain.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton
+                asChild
+                isActive={isRouteActive(pathname, item.url)}
+                tooltip={item.title}
+              >
+                <Link href={item.url} onClick={toggleSidebar}>
+                  <item.icon />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarHeader>
     </Sidebar>
   );
