@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies(); // Synchronous, no await
+  const cookieStore = await cookies(); 
   const supabase = createSupabaseServerClient({
     getCookie: (name) => cookieStore.get(name)?.value,
     setCookie: (name, value, options) => cookieStore.set({ name, value, ...options }),
